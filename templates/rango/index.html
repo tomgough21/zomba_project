@@ -2,17 +2,8 @@
 
 {% load staticfiles %}
 
-{% block title %}Index{% endblock %}
 
         {% block body_block %}
-{% if user.is_authenticated %}
-    <div class="page-header">
-
-                <h1>Welcome to Zomba {{ user.username }}!</h1>
-            {% else %}
-                <h1>This is Zomba</h1>
-            {% endif %}
-</div>
 
     <!-- Carousel
     ================================================== -->
@@ -25,7 +16,7 @@
       </ol>
       <div class="carousel-inner" role="listbox">
         <div class="item active">
-          <img class="first-slide" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="First slide">
+          <img class="first-slide" src="../../static/images/zombie-thumbnail.png" alt="First slide">
           <div class="container">
             <div class="carousel-caption">
 
@@ -36,7 +27,7 @@
           </div>
         </div>
         <div class="item">
-          <img class="second-slide" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+          <img class="second-slide" src="../../static/images/zombie-thumbnail.png" alt="Second slide">
           <div class="container">
             <div class="carousel-caption">
               <h1>Another example headline.</h1>
@@ -69,7 +60,7 @@
 <!--Circle headings-->
  <div class="row">
         <div class="col-lg-4">
-          <img class="img-circle" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Generic placeholder image" width="140" height="140">
+          <img class="img-circle" src="../../static/images/zombie-thumbnail.png" alt="Generic placeholder image" width="140" height="140">
 
           <h2>Heading</h2>
           <p>Donec sed odio dui. Etiam porta sem malesuada magna mollis euismod. Nullam id dolor id nibh ultricies vehicula ut id elit. Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Praesent commodo cursus magna.</p>

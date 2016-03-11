@@ -33,8 +33,7 @@ def populate():
         url="http://www.djangorocks.com/")
 
     add_page(cat=django_cat,
-        title="How to 
- with Django",
+        title="How to tango with Django",
         url="http://www.tangowithdjango.com/")
 
     frame_cat = add_cat("Other Frameworks",32,16)
