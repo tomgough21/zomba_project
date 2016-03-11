@@ -15,7 +15,7 @@
 
 
     <!-- Custom styles for this template -->
-    <link href="../../static/css/carousel.css" rel="stylesheet">
+    <!link href="../../static/css/carousel.css" rel="stylesheet">
   </head>
 <!-- NAVBAR
 ================================================== -->
@@ -39,7 +39,6 @@
 		{% if user.is_authenticated %}
 			<li><a href="{% url 'restricted' %}">Restricted Page</a></li>
                         <li><a href="{% url 'auth_logout' %}?next=/rango/">Logout</a></li>
-                        <li><a href="{% url 'add_category' %}">Add a New Category</a></li>
                  {% else %}
                         <li><a href="{% url 'registration_register' %}">Register Here</a></li>
                         <li><a href="{% url 'auth_login' %}">Login</a></li>
