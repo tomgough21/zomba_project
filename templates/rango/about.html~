@@ -12,6 +12,6 @@
 		
             <p>This is <strong>Rango's about page</strong></p>
 
-            <img  width="90" height="100" src="{% static "images/rango.png" %}" alt="Picture of Rango" /> <!-- New line -->
+           
             </div>
 {% endblock %}
