@@ -40,7 +40,8 @@ function sendCommand(command) {
 <div>
 <span> Test Commands (response in console): </span> <br>
 <a href="#" onclick="sendCommand( { instruction: 'new_game'} );">Initialise new game </a> <br>
-<a href="#" onclick="sendCommand( { instruction: 'load_game'} );">Load saved game </a>
+<a href="#" onclick="sendCommand( { instruction: 'load_game'} );">Load saved game </a> <br>
+<a href="#" onclick="sendCommand( { instruction: 'take_turn', turn: 'MOVE', data1: 1} );">take turn (move 1) </a>
 </div>
 <div id="data_returned">
 </div>

@@ -80,6 +80,39 @@ def user_logout(request):
 	logout(request)
 	return HttpResponseRedirect('/zomba/')
 
+#hacked together for testing
+def helper_save_game(user, game):
+    player = get_object_or_404(Player, user = user);
+    if(not player.in_game):
+        player.in_game = InGame.objects.create(
+            game_state = pickle.dumps(game.game_state),
+            street_state = pickle.dumps(game.street),
+            update_state = pickle.dumps(game.update_state),
+            player_state = pickle.dumps(game.player_state),
+        );
+    else:
+        player.in_game.player_state = pickle.dumps(game.player_state)
+        player.in_game.update_state = pickle.dumps(game.update_state)
+        player.in_game.street_state = pickle.dumps(game.street)
+        player.in_game.game_state = pickle.dumps(game.game_state)
+
+    player.in_game.save()
+    player.save()
+
+def helper_new_game(user):
+    g = Engine.Game()
+    g.start_new_day()
+    helper_save_game(user, g)
+
+def helper_get_game(user):
+    player = get_object_or_404(Player, user = user);
+    g = Engine.Game()
+    g.player_state = pickle.loads(player.in_game.player_state)
+    g.update_state = pickle.loads(player.in_game.update_state)
+    g.street = pickle.loads(player.in_game.street_state)
+    g.game_state = pickle.loads(player.in_game.game_state)
+    return g
+
 @login_required
 def engine_update(request):
     if request.is_ajax():
@@ -87,37 +120,24 @@ def engine_update(request):
         if "instruction" not in update_event:
             return JsonResponse({"command": "malformed", "status": "failed"})
 
-        if update_event["instruction"] == "new_game":
-            #initialise new game
-            g = Engine.Game()
-            g.start_new_day()
-            player_state = pickle.dumps(g.player_state)
-            update_state = pickle.dumps(g.update_state)
-            street = pickle.dumps(g.street)
-            game_state = pickle.dumps(g.game_state)
-
-            #update database
-            player = get_object_or_404(Player, user = request.user);
-            if(not player.in_game):
-                player.in_game = InGame.objects.create(game_state = game_state, street_state = street, update_state = update_state, player_state = player_state);
-            player.in_game.game_state = game_state
-            player.in_game.street_state = street
-            player.in_game.update_state = update_state
-            player.in_game.player_state = player_state
-            player.save()
-
+        if update_event["instruction"] == "new_game":   #create a new game and send the state
+            helper_new_game(request.user)
+            status = {}
             return JsonResponse({"command": "new_game", "status": "ok"})
 
-        if update_event["instruction"] == "load_game":
-            player = get_object_or_404(Player, user = request.user);
-            g = Engine.Game()
-            g.player_state = pickle.loads(player.in_game.game_state)
-            g.update_state = pickle.loads(player.in_game.update_state)
-            g.street = pickle.loads(player.in_game.street_state)
-            g.game_state = pickle.loads(player.in_game.game_state)
+        if update_event["instruction"] == "load_game":      #this would just send the whole game state (refresh)
+            g = helper_get_game(request.user)
             return JsonResponse({"command": "load_game", "status": "ok"})
 
-    return JsonResponse({"command": "unsupported", "status": "failed"})
+        if update_event["instruction"] == "take_turn":  #take a turn
+            g = helper_get_game(request.user)
+            if(update_event["turn"] in g.turn_options()):
+                g.take_turn(update_event["turn"], int(update_event["data1"]))
+                helper_save_game(request.user, g)
+                return JsonResponse({"command": "take_turn", "status": "ok", "game_state": g.game_state})
+            return JsonResponse({"command": "take_turn", "status": "invalid turn"})
+
+    return JsonResponse({"command": update_event, "status": "failed"})
 
 @login_required
 def engine_debug(request):
