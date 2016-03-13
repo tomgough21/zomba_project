@@ -11,16 +11,16 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link href="http://getbootstrap.com/examples/signin/signin.css" rel="stylesheet">
-    <link rel="icon" href="../../static/images/zombie-thumbnail.png">
+    <link rel="icon" href="{% static 'images/zombie-thumbnail.png'%}">
 
     <!-- Bootstrap core CSS -->
-    <link href="../../static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{% static 'css/bootstrap.min.css'%}" rel="stylesheet">
 
     <!-- carousel template css-->
-    <link href="../../static/css/carousel.css" rel="stylesheet">
+    <link href="{% static 'css/carousel.css'%}" rel="stylesheet">
 
     <!-- finaly override with our custom css -->
-    <link href="../../static/css/zomba.css" rel="stylesheet">
+    <link href="{% static 'css/zomba.css'%}" rel="stylesheet">
   </head>
 
   <body>
@@ -43,7 +43,7 @@
                 <li><a href="{% url 'about' %}">About</a></li>
                 {% if user.is_authenticated %}
                   <li class="pull-right"><a href="{% url 'restricted' %}">{{ user.username }}</a></li>
-                  <li class="pull-right"><a href="{% url 'auth_logout' %}?next=/rango/">Logout</a></li>
+                  <li class="pull-right"><a href="{% url 'auth_logout' %}?next=/zomba/">Logout</a></li>
                 {% else %}
                   <li class="pull-right"><a href="{% url 'auth_login' %}">Login</a></li>
                   <li class="pull-right"><a href="{% url 'registration_register' %}">Register</a></li>
@@ -79,9 +79,7 @@
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
-    <script src="../../static/js/bootstrap.min.js"></script>
-
+    <script src="{% static 'js/bootstrap.min.js'%}"></script>
   </body>
 </html>
 
