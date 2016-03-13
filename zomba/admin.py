@@ -5,14 +5,14 @@ class MedalAdmin(admin.ModelAdmin):
   list_display = ('logo', 'name', 'threshold', 'next_rank')
 class AchievementAdmin(admin.ModelAdmin):
   list_display = ('name', 'progress', 'rank', 'player')
-class GameAdmin(admin.ModelAdmin):
+class InGameAdmin(admin.ModelAdmin):
   list_display = ('game_state', 'street_state', 'update_state', 'player_state')
 class PlayerAdmin(admin.ModelAdmin):
   list_display = ('user', 'in_game', 'picture')
 
 admin.site.register(Medal,MedalAdmin)
 admin.site.register(Achievement,AchievementAdmin)
-admin.site.register(Game,GameAdmin)
+admin.site.register(InGame,InGameAdmin)
 admin.site.register(Player,PlayerAdmin)
 
 

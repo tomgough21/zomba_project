@@ -9,4 +9,6 @@ urlpatterns = patterns('',
 	url(r'^logout/$',views.user_logout, name='logout'),
   url(r'^debug/',views.engine_debug, name='debug'),
   url(r'^engine_update/', views.engine_update, name='engine_update'),
+  url(r'^update_player/', views.create_player, name='create_player'),
+  url(r'^profile/(?P<username>[\w\-]+)/$', views.profile, name='profile'),
 )

@@ -12,7 +12,7 @@ class Medal(models.Model):
     def __unicode__(self):
         return self.name
 
-class Game(models.Model):
+class InGame(models.Model):
     game_state = models.TextField()
     street_state = models.TextField()
     update_state = models.TextField()
@@ -23,7 +23,7 @@ class Game(models.Model):
 
 class Player(models.Model):
     user = models.OneToOneField(User)
-    in_game = models.OneToOneField(Game, null=True, blank=True)
+    in_game = models.OneToOneField(InGame, null=True, blank=True)
     picture = models.ImageField(upload_to='profile_images', blank=True)
 
     def __unicode__(self):

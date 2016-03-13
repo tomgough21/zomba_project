@@ -5,7 +5,7 @@ from registration.backends.simple.views import RegistrationView
 
 class MyRegistrationView(RegistrationView):
 	def get_success_url(self,request):
-		return '/zomba/'
+		return '/zomba/update_player/'
 
 urlpatterns = patterns('',
     url(r'^', include('zomba.urls')), #root redirect

@@ -9,6 +9,5 @@ if __name__ == "__main__":
     except:
         pass
     execute_from_command_line(["manage.py", "migrate"])
-    # load default admin user to avoid having to input password
-    execute_from_command_line(["manage.py", "createsuperuser", "--username=admin", "--email=admin.null.com"])
+
     execfile("populate.py")

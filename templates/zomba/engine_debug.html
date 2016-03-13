@@ -4,19 +4,45 @@
 
 {% block body_block %}
 
-<input type="hidden" id="csrf_token" value="{{ csrf_token }}"/>
 <script>
 
-var myEvent = {csrfmiddlewaretoken: "{{ csrf_token }}", id: 1, start: 2, end: 3,
-               allDay: "hi" };
-
-function testjson() {
-  jQuery.post("/engine_update/", {csrfmiddlewaretoken: jQuery("#csrf_token").val(), data: myEvent}, function(result){console.log(result)}, "json");
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie != '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
 }
+
+function sendCommand(command) {
+  jQuery.ajax({
+    url: '/engine_update/',
+    type: 'post',
+    data: JSON.stringify(command),
+    headers: {
+        "X-CSRFToken": getCookie('csrftoken'),
+    },
+    dataType: 'json',
+    success: function (data) {
+        console.info(data);
+    }
+  });
+}
+
 </script>
 <div>
-<a href="#" onclick="testjson();">Test json request</a>
+<span> Test Commands (response in console): </span> <br>
+<a href="#" onclick="sendCommand( { instruction: 'new_game'} );">Initialise new game </a> <br>
+<a href="#" onclick="sendCommand( { instruction: 'load_game'} );">Load saved game </a>
 </div>
 <div id="data_returned">
 </div>
+
 {% endblock %}
