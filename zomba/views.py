@@ -4,6 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.decorators import  login_required
 from datetime import datetime
+from django.http import JsonResponse
 
 def index(request):
     context_dict = {}
@@ -12,15 +13,7 @@ def index(request):
     return response
 
 def about(request):
-	if request.session.get('visits'):
-    		count = request.session.get('visits')
-	else:
-    		count = 0
-# remember to include the visit data
-	return render(request, 'zomba/about.html', {'visits': count})
-
-def contact(request):
-    return render(request,'zomba/contact.html')
+	return render(request, 'zomba/about.html')
 
 def register(request):
     if request.session.test_cookie_worked():
@@ -122,7 +115,7 @@ def user_login(request):
     else:
         # No context variables to pass to the template system, hence the
         # blank dictionary object...
-        return render(request, 'zomba/login.html', {})
+        return render(request, 'registration/login.html', {})
 
 @login_required
 def restricted(request):
@@ -131,3 +124,17 @@ def restricted(request):
 def user_logout(request):
 	logout(request)
 	return HttpResponseRedirect('/zomba/')
+
+@login_required
+def engine_update(request):
+    if request.is_ajax():
+        if request.method == 'POST':
+            print 'Raw Data: "%s"' % request.body   
+    return JsonResponse({"status": "ok"})
+
+@login_required
+def engine_debug(request):
+    if request.user.is_superuser:
+        return render(request,'zomba/engine_debug.html')
+    else:
+        return HttpResponseRedirect('/zomba/')

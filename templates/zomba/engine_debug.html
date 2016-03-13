@@ -1,0 +1,22 @@
+{% extends 'zomba/base.html' %}
+
+{% load staticfiles %}
+
+{% block body_block %}
+
+<input type="hidden" id="csrf_token" value="{{ csrf_token }}"/>
+<script>
+
+var myEvent = {csrfmiddlewaretoken: "{{ csrf_token }}", id: 1, start: 2, end: 3,
+               allDay: "hi" };
+
+function testjson() {
+  jQuery.post("/engine_update/", {csrfmiddlewaretoken: jQuery("#csrf_token").val(), data: myEvent}, function(result){console.log(result)}, "json");
+}
+</script>
+<div>
+<a href="#" onclick="testjson();">Test json request</a>
+</div>
+<div id="data_returned">
+</div>
+{% endblock %}
