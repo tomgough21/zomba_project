@@ -5,12 +5,12 @@ from registration.backends.simple.views import RegistrationView
 
 class MyRegistrationView(RegistrationView):
 	def get_success_url(self,request):
-		return '/rango/'
+		return '/zomba/'
 
 urlpatterns = patterns('',
 
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^rango/', include('rango.urls')),
+    url(r'^zomba/', include('zomba.urls')),
     url(r'^accounts/register/$', MyRegistrationView.as_view(), name='registration_register'),
     url(r'^accounts/', include('registration.backends.simple.urls')),
 )

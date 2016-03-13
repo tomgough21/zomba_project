@@ -2,7 +2,7 @@
 {% load staticfiles %}
 <html lang="en">
   <head>
-
+  
 <title>{% block title %}Zomba{% endblock %}</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,6 +10,7 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="">
     <meta name="author" content="">
+    <link href="http://getbootstrap.com/examples/signin/signin.css" rel="stylesheet">
     <link rel="icon" href="../../static/images/zombie-thumbnail.png">
 
     <!-- Bootstrap core CSS -->
@@ -19,12 +20,12 @@
     <!-- Custom styles for this template -->
     <link href="../../static/css/carousel.css" rel="stylesheet">
   </head>
-<!-- NAVBAR
-================================================== -->
+
   <body>
+
     <div class="navbar-wrapper">
       <div class="container">
- <nav class="navbar navbar-inverse navbar-static-top">
+        <nav class="navbar navbar-inverse navbar-static-top">
           <div class="container">
             <div class="navbar-header">
               <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -34,14 +35,14 @@
             </div>
             <div id="navbar" class="navbar-collapse collapse">
               <ul class="nav navbar-nav">
-		<li><a href="{% url 'about' %}">About</a></li>
-		{% if user.is_authenticated %}
-			<li style="margin-left:820px;"><a href="{% url 'restricted' %}">{{ user.username }}</a></li>
-                        <li><a href="{% url 'auth_logout' %}?next=/rango/">Logout</a></li>
-                 {% else %}
-                        <li><a href="{% url 'auth_login' %}">Login</a></li>
-                        <li><a href="{% url 'registration_register' %}">Register Here</a></li>
-                    {% endif %}
+                <li><a href="{% url 'about' %}">About</a></li>
+                {% if user.is_authenticated %}
+                 <li style="margin-left:820px;"><a href="{% url 'restricted' %}">{{ user.username }}</a></li>
+                <li><a href="{% url 'auth_logout' %}?next=/zomba/">Logout</a></li>
+                {% else %}
+                <li><a href="{% url 'auth_login' %}">Login</a></li>
+                <li><a href="{% url 'registration_register' %}">Register Here</a></li>
+                {% endif %}
               </ul>
             </div>
           </div>
@@ -49,30 +50,23 @@
 
       </div>
     </div>
-                {% block side_block %}
-{% load rango_extras %}
-			
+
+
+{% block side_block %}
+{% load zomba_extras %}	
 {% endblock %}
 
  
-
-
-    <!-- Marketing messaging and featurettes
-    ================================================== -->
-    <!-- Wrap the rest of the page in another container to center all the content. -->
     <div class="container marketing">
- <p>
-</p>
- {% block body_block %}{% endblock %}
-      <!-- Three columns of text below the carousel -->
 
-      <!-- FOOTER -->
+      {% block body_block %}{% endblock %}
+
       <footer>
         <p class="pull-right"><a href="#">Back to top</a></p>
         <p>&copy; 2016 Zomba, Inc. &middot; <a href="#">Privacy</a> &middot; <a href="#">Terms</a></p>
       </footer>
 
-    </div><!-- /.container -->
+    </div>
 
 
     <!-- Bootstrap core JavaScript
