@@ -8,7 +8,7 @@ class MyRegistrationView(RegistrationView):
 		return '/zomba/'
 
 urlpatterns = patterns('',
-
+    url(r'^', include('zomba.urls')), #root redirect
     url(r'^admin/', include(admin.site.urls)),
     url(r'^zomba/', include('zomba.urls')),
     url(r'^accounts/register/$', MyRegistrationView.as_view(), name='registration_register'),

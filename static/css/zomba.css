@@ -1,0 +1,8 @@
+body {  //fix overrides from login.css
+  margin-top: 0px;
+  padding-top: 0px;
+}
+
+.navbar-nav {
+  width :90%;
+}
