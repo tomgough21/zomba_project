@@ -29,13 +29,10 @@ def leaderboard_survived(request):
 
 def leaderboard_team(request):
     return render(request, 'zomba/leaderboard_team.html')
-=======
-def leaderboard(request):
-    return render(request, 'zomba/leaderboard.html')
     
 def achievements(request):
     return render(request, 'zomba/achievements.html')
->>>>>>> 7aa1dd8dd2051b9099c791dc727578a0359e8457
+
 
 @login_required
 def create_player(request):
