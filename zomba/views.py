@@ -22,7 +22,7 @@ def about(request):
 
 @login_required
 def create_player(request):
-    Profile.objects.create(user = request.user)
+    Player.objects.create(user = request.user)
     user = request.user
     username = user.username
     return HttpResponseRedirect('/zomba/profile/'+ username)
