@@ -38,16 +38,25 @@
 
             <div id="navbar" class="navbar-collapse collapse">
               <ul class="nav navbar-nav">
-                <li><a href="{% url 'about' %}">About</a></li>
                 {% if user.is_authenticated %}
-                <li><a href="{% url 'leaderboard_kills' %}">Leaderboard</a></li>
-                <li><a href="{% url 'achievements' %}">Achievements</a></li>
-                  <li class="pull-right"><a href="{% url 'restricted' %}">{{ user.username }}</a></li>
-                  <li class="pull-right"><a href="{% url 'auth_logout' %}?next=/zomba/">Logout</a></li>
+                  <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ user.username }}<span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li><a href="#">Visit Profile</a></li>
+                  <li><a href="{% url 'achievements' %}">Achievements</a></li>
+                  <li><a href="{% url 'auth_logout' %}?next=/zomba/">Logout</a></li>
+                  <li role="separator" class="divider"></li>
+                  <li class="dropdown-header">Other</li>
+                  <li><a href="#">Possible</a></li>
+                  <li><a href="#">Links</a></li>
+                </ul>
+              </li>
+              <li class="pull-right"><a href="{% url 'leaderboard_kills' %}">Leaderboard</a></li>
                 {% else %}
                   <li class="pull-right"><a href="{% url 'auth_login' %}">Login</a></li>
                   <li class="pull-right"><a href="{% url 'registration_register' %}">Register</a></li>
                 {% endif %}
+                <li class="pull-right"><a href="{% url 'about' %}">About</a></li>
               </ul>
             </div>
 
