@@ -20,6 +20,9 @@ def index(request):
 def about(request):
 	return render(request, 'zomba/about.html')
 
+def leaderboard(request):
+    return render(request, 'zomba/leaderboard.html')
+
 @login_required
 def create_player(request):
     Player.objects.create(user = request.user)
