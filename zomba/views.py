@@ -22,6 +22,9 @@ def about(request):
 
 def leaderboard(request):
     return render(request, 'zomba/leaderboard.html')
+    
+def achievements(request):
+    return render(request, 'zomba/achievements.html')
 
 @login_required
 def create_player(request):
