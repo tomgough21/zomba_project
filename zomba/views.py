@@ -20,7 +20,6 @@ def index(request):
 def about(request):
 	return render(request, 'zomba/about.html')
 
-<<<<<<< HEAD
 def leaderboard_kills(request):
     return render(request, 'zomba/leaderboard_kills.html')
 
