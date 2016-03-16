@@ -40,4 +40,4 @@ class Achievement(models.Model):
     badge = models.ForeignKey(Badge)
     date_awarded = models.DateTimeField(auto_now_add=True, blank=True)
     def __unicode__(self):
-        return self.name
+        return self.player.user.username + " Achieved " + self.badge.name
