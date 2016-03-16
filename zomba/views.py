@@ -40,9 +40,19 @@ def create_player(request):
     username = user.username
     return HttpResponseRedirect('/zomba/profile/'+ username)
 
-@login_required
 def profile(request, username):
-    return HttpResponse("this profile is amazing look at all those cool achievements")
+    context_dict={}
+    try:
+        user=User.objects.get(username=user_name)
+        context_dict['username']=user
+    except:
+        pass
+    try:
+        profile = UserProfile.objects.get(user=user)
+        context_dict['profile']=profile
+    except:
+        pass
+    return render(request, 'zomba/profile.html',context_dict)
 
 def user_login(request):
 
