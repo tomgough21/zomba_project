@@ -16,15 +16,29 @@ class Migration(migrations.Migration):
             name='Achievement',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('name', models.CharField(unique=True, max_length=128)),
-                ('progress', models.IntegerField(default=0)),
+                ('date_awarded', models.DateTimeField(auto_now_add=True)),
             ],
             options={
             },
             bases=(models.Model,),
         ),
         migrations.CreateModel(
-            name='Game',
+            name='Badge',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(unique=True, max_length=128)),
+                ('description', models.TextField()),
+                ('criteria', models.IntegerField(default=0)),
+                ('bage_type', models.CharField(unique=True, max_length=128)),
+                ('level', models.CharField(unique=True, max_length=128)),
+                ('icon', models.ImageField(upload_to=b'profile_images', blank=True)),
+            ],
+            options={
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='InGame',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('game_state', models.TextField()),
@@ -37,24 +51,15 @@ class Migration(migrations.Migration):
             bases=(models.Model,),
         ),
         migrations.CreateModel(
-            name='Medal',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('logo', models.ImageField(upload_to=b'profile_images', blank=True)),
-                ('name', models.CharField(unique=True, max_length=128)),
-                ('threshold', models.IntegerField(default=0)),
-                ('next_rank', models.ForeignKey(blank=True, to='zomba.Medal', null=True)),
-            ],
-            options={
-            },
-            bases=(models.Model,),
-        ),
-        migrations.CreateModel(
             name='Player',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('picture', models.ImageField(upload_to=b'profile_images', blank=True)),
-                ('in_game', models.OneToOneField(null=True, blank=True, to='zomba.Game')),
+                ('profile_picture', models.ImageField(upload_to=b'profile_images', blank=True)),
+                ('games_played', models.IntegerField(default=0)),
+                ('most_days_survived', models.IntegerField(default=0)),
+                ('most_kills', models.IntegerField(default=0)),
+                ('most_people', models.IntegerField(default=0)),
+                ('current_game', models.OneToOneField(null=True, blank=True, to='zomba.InGame')),
                 ('user', models.OneToOneField(to=settings.AUTH_USER_MODEL)),
             ],
             options={
@@ -63,14 +68,14 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='achievement',
-            name='player',
-            field=models.ForeignKey(to='zomba.Player'),
+            name='badge',
+            field=models.ForeignKey(to='zomba.Badge'),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='achievement',
-            name='rank',
-            field=models.ForeignKey(to='zomba.Medal'),
+            name='player',
+            field=models.ForeignKey(to='zomba.Player'),
             preserve_default=True,
         ),
     ]

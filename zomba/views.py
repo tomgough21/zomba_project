@@ -106,20 +106,20 @@ def user_logout(request):
 #hacked together for testing
 def helper_save_game(user, game):
     player = get_object_or_404(Player, user = user);
-    if(not player.in_game):
-        player.in_game = InGame.objects.create(
+    if(not player.current_game):
+        player.current_game = InGame.objects.create(
             game_state = pickle.dumps(game.game_state),
             street_state = pickle.dumps(game.street),
             update_state = pickle.dumps(game.update_state),
             player_state = pickle.dumps(game.player_state),
         );
     else:
-        player.in_game.player_state = pickle.dumps(game.player_state)
-        player.in_game.update_state = pickle.dumps(game.update_state)
-        player.in_game.street_state = pickle.dumps(game.street)
-        player.in_game.game_state = pickle.dumps(game.game_state)
+        player.current_game.player_state = pickle.dumps(game.player_state)
+        player.current_game.update_state = pickle.dumps(game.update_state)
+        player.current_game.street_state = pickle.dumps(game.street)
+        player.current_game.game_state = pickle.dumps(game.game_state)
 
-    player.in_game.save()
+    player.current_game.save()
     player.save()
 
 def helper_new_game(user):
@@ -130,10 +130,10 @@ def helper_new_game(user):
 def helper_get_game(user):
     player = get_object_or_404(Player, user = user);
     g = Engine.Game()
-    g.player_state = pickle.loads(player.in_game.player_state)
-    g.update_state = pickle.loads(player.in_game.update_state)
-    g.street = pickle.loads(player.in_game.street_state)
-    g.game_state = pickle.loads(player.in_game.game_state)
+    g.player_state = pickle.loads(player.current_game.player_state)
+    g.update_state = pickle.loads(player.current_game.update_state)
+    g.street = pickle.loads(player.current_game.street_state)
+    g.game_state = pickle.loads(player.current_game.game_state)
     return g
 
 @login_required

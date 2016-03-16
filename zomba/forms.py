@@ -12,6 +12,6 @@ class UserForm(forms.ModelForm):
 class PlayerForm(forms.ModelForm):
 	class Meta:
 		model = Player
-		fields = ('in_game','picture')
+		fields = ('current_game','profile_picture')
 
 
