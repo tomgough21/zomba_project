@@ -22,10 +22,23 @@
             {% if user.is_authenticated %}
               <h1>Start your adventure today!</h1>
               <p>You find yourself in a zombie apocalypse. Explore the street, find survivors and try your best to live through the nights.</p>
-              <p><a class="btn btn-lg btn-primary" href="#startgame"role="button">Start game</a></p>
+
+              <script>
+              function play(){
+                      var audio = document.getElementById("audio");
+                        audio.play();
+              }
+              </script>
+
+            
+              <audio id="audio" src="{% static 'sounds/Zombie_45.mp3'%}" ></audio>
+
+              <p><a class="btn btn-lg btn-primary" href="#startgame"value="play" onclick="play()" role="button">Start game</a></p>
               {% else %}
               <h1>Start your adventure today!</h1>
               <p>You find yourself in a zombie apocalypse. Explore the streets, find survivors and try your best to live through the nights.</p>
+              
+
               <p><a class="btn btn-lg btn-primary" href="{% url 'registration_register' %}"role="button">Sign up</a></p>
               {% endif %}
             </div>
