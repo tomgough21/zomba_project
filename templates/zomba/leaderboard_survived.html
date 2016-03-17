@@ -40,19 +40,22 @@
 
    
         <div class="col-sm-5 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-          <h1 class="page-header">Leaderboards</h1>
+         <h1 class="page-header">Leaderboards</h1>
 
           <div class="row placeholders">
-            <div class="col-xs-6 col-sm-3 placeholder">
-              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
+            <div class="col-xs-6 col-sm-4 placeholder">
+              <a href="{% url 'leaderboard_kills' %}">
+              <img src="{% static 'images/achievements/mostkills.png'%}" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail"></a>
               <h4>Most Kills</h4>
             </div>
-            <div class="col-xs-6 col-sm-3 placeholder">
-              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
+            <div class="col-xs-6 col-sm-4 placeholder">
+              <a href="{% url 'leaderboard_survived' %}">
+              <img src="{% static 'images/achievements/survived.png'%}" width="250" height="250" class="img-responsive" alt="Generic placeholder thumbnail"></a>
               <h4>Longest time survived</h4>
             </div>
-            <div class="col-xs-6 col-sm-5 placeholder">
-              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
+            <div class="col-xs-6 col-sm-4 placeholder">
+              <a href="{% url 'leaderboard_team' %}">
+              <img src="{% static 'images/achievements/mostfood.png'%}" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail"></a>
               <h4>Largest party size</h4>
             </div>
         

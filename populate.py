@@ -15,7 +15,6 @@ def populate():
     add_user('jill','jill@test.com','jill')
     add_user('bob','bob@test.com','bob')
     add_user('jen','jen@test.com','jen')
-
     #add your test users here
 
 def add_user(username, email, password):
