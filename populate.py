@@ -11,6 +11,10 @@ def populate():
     setup_admin_account()
     #add a standard user
     add_user('p3p','p3p@p3psoft.co.uk','password')
+    add_user('test','test@test.com','12345')
+    add_user('jill','jill@test.com','jill')
+    add_user('bob','bob@test.com','bob')
+    add_user('jen','jen@test.com','jen')
 
     #add your test users here
 
