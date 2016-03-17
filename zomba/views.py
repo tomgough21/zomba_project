@@ -31,6 +31,9 @@ def leaderboard_team(request):
     
 def achievements(request):
     return render(request, 'zomba/achievements.html')
+    
+def gallery(request):
+    return render(request, 'zomba/gallery.html')
 
 
 @login_required

@@ -1,0 +1,51 @@
+{% extends "zomba/base.html" %}
+{% load staticfiles %}
+{% block body_block %}
+<h1 class="page-header">Gallery</h1><br><br>
+<!-- Thumbnails -->
+<div class="row placeholders">
+<a href="javascript:displayDiv('image_first', 'image_second','image_third')">
+	<div class="col-xs-6 col-sm-3 placeholder"><img src="{% static 'images/screenshots/screen1.png'%}" width="500" height="500" class="img-responsive" alt="Thumbnail 1"></div>
+</a>
+<a href="javascript:displayDiv('image_second', 'image_first','image_third')">
+	<div class="col-xs-6 col-sm-3 placeholder"><img src="{% static 'images/screenshots/screen2.png'%}" width="500" height="500" class="img-responsive" alt="Thumbnail 2"></div>
+</a>
+<a href="javascript:displayDiv('image_third', 'image_first','image_second')">
+	<div class="col-xs-6 col-sm-3 placeholder"><img src="{% static 'images/screenshots/screen3.png'%}" width="500" height="500" class="img-responsive" alt="Thumbnail 3"></div>
+</a></div>
+
+<!-- Content DIVs -->
+<div id="image_first" style="display:none; border:none; padding:25px;">
+<p style="margin:0; color:red;">
+<img src="{% static 'images/screenshots/screen1.png'%}" width="794" height="412" alt="screen1">
+</p>
+</div>
+<div id="image_second" style="display:none; border:none; padding:25px;">
+<p style="margin:0; color:blue;">
+<img src="{% static 'images/screenshots/screen2.png'%}" width="794" height="412" alt="screen2">
+</p>
+</div>
+<div id="image_third" style="display:none; border:none; padding:25px;">
+<p style="margin:0; color:blue;">
+<img src="{% static 'images/screenshots/screen3.png'%}" width="794" height="412" alt="screen3">
+</p>
+</div>
+
+<script type="text/javascript">
+function displayDiv(div1,div2,div3)
+{
+   toDisplay = document.getElementById(div1);
+   hideDiv1 = document.getElementById(div2);
+   hideDiv2 = document.getElementById(div3);
+   if( toDisplay.style.display == "none" )
+   {
+      toDisplay.style.display = "block";
+      hideDiv1.style.display = "none";
+      hideDiv2.style.display = "none";
+   }
+}
+</script>
+
+
+            <br><br><br>
+{% endblock %}
