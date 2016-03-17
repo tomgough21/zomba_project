@@ -1,7 +1,103 @@
 {% extends "zomba/base.html" %}
+{% load staticfiles %}
 {% block body_block %}
 {% if user.is_authenticated %}
-  <strong> Yo! <strong/>
+<div class="row placeholders">
+			<div class="col-xs-6 col-sm-3 placeholder">
+              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
+              <h1><b>{{ user.username }}</b></h1>
+              <span class="text-muted">Joined: [Date]<br>Location: [Location]</br><a href="#">Edit Profile</a></span>
+            </div>
+			<i><h1 class="page-header">About Me</h1>Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+			Donec vulputate in est non vestibulum. Nulla id diam quis velit ullamcorper consectetur sit amet eu mi. Sed arcu lorem, molestie eget tempor ut, laoreet eu augue. 
+			Curabitur rutrum vulputate consectetur. Cras aliquet sagittis hendrerit. Integer sodales iaculis ipsum eu rutrum. Suspendisse fermentum tempor erat nec sodales. 
+			Nullam vitae pharetra lorem. Suspendisse tincidunt euismod mi non dictum. Curabitur pulvinar neque dignissim porttitor molestie. Suspendisse a accumsan eros. 
+			Cras faucibus nisl arcu, ac mollis sem aliquet ac. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam et gravida leo. 
+			Cras mollis tristique ipsum at volutpat. Phasellus eu est eget nisi accumsan hendrerit. "</h4></i>
+            </div>
+            <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+          <h1 class="page-header">{{ user.username }}'s Achievements</h1>
+
+          <div class="row placeholders">
+            <div class="col-xs-6 col-sm-3 placeholder">
+              <img src="{% static 'images/achievements/mostkills.png'%}" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
+              <h4>Most Kills</h4>
+              <span class="text-muted">Highest number of kills in a singular game session</span>
+            </div>
+            <div class="col-xs-6 col-sm-3 placeholder">
+              <img src="{% static 'images/achievements/survived.png'%}" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
+              <h4>Days Survived</h4>
+              <span class="text-muted">Longest time survived</span>
+            </div>
+            <div class="col-xs-6 col-sm-3 placeholder">
+              <img src="{% static 'images/achievements/mostfood.png'%}" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
+              <h4>Most Food</h4>
+              <span class="text-muted">Most amount of food at end of a singular game session</span>
+            </div>
+            <div class="col-xs-6 col-sm-3 placeholder">
+              <img src="{% static 'images/achievements/partymembers.png'%}" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
+              <h4>Most Party Members</h4>
+              <span class="text-muted">Most amount of party members at end of a singular game session</span>
+            </div>
+          </div>
+
+          <h2 class="sub-header">Top Five Scoreboard (<i>Sort By</i>: <b>[Clicked Image]</b>)</h2>
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Most Kills</th>
+                  <th>Days Survived</th>
+                  <th>Most Food</th>
+                  <th>Most Party Members</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>34</td>
+                  <td>8 Days</td>
+                  <td>8</td>
+                  <td>5</td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td>17</td>
+                  <td>6 Days</td>
+                  <td>7</td>
+                  <td>4</td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td>10</td>
+                  <td>3 Days</td>
+                  <td>5</td>
+                  <td>3</td>
+                </tr>
+                <tr>
+                  <td>4</td>
+                  <td>8</td>
+                  <td>2 Days</td>
+                  <td>2</td>
+                  <td>2</td>
+                </tr>
+                <tr>
+                  <td>5</td>
+                  <td>3</td>
+                  <td>1 Days</td>
+                  <td>0</td>
+                  <td>0</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+            <br><br><br>
+
+            
 {% else %}
 	<strong> User does not exist! <strong/>
 {% endif %}
