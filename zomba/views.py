@@ -20,14 +20,8 @@ def index(request):
 def about(request):
 	return render(request, 'zomba/about.html')
 
-def leaderboard_kills(request):
-    return render(request, 'zomba/leaderboard_kills.html')
-
-def leaderboard_survived(request):
-    return render(request, 'zomba/leaderboard_survived.html')
-
-def leaderboard_team(request):
-    return render(request, 'zomba/leaderboard_team.html')
+def leaderboard(request):
+    return render(request, 'zomba/leaderboard.html')
     
 def achievements(request):
     return render(request, 'zomba/achievements.html')
