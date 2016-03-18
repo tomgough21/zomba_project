@@ -78,19 +78,32 @@
 <!--Circle headings-->
  <div class="row">
         <div class="col-lg-4">
-          <img class="img-circle" src="{% static 'images/zombie-face.png'%}" alt="Generic placeholder image" width="140" height="140">
-
-          <h2><b>ZOMBIES</b></h2>
-        </div><!-- /.col-lg-4 -->
-        <div class="col-lg-4">
-          <img class="img-circle" src="{% static 'images/guns.png'%}" alt="Generic placeholder image" width="140" height="140">
-          <h2><b>GUNS</b></h2>
-        </div><!-- /.col-lg-4 -->
-        <div class="col-lg-4">
           <img class="img-circle" src="{% static 'images/morezombies.jpg'%}" alt="Generic placeholder image" width="140" height="140">
-          <h2><b>MORE ZOMBIES</b></h2>
+          <h2><b>How To Play</b></h2>
         </div><!-- /.col-lg-4 -->
+        <div class="col-lg-8">
+          <p class="lead">The objective of Zomba is simple: the player must search a series of generated houses to find food, ammunition and survivors whilst fighting zombies. Survivors become team members which assist the player in fighting zombies and in order to fight zombies, the player must have an adequate combination of ammunition and team members.</p>
+        </div>
       </div><!-- /.row -->
+<br><br>
+       <div class="row">
+        <div class="col-lg-8">
+          <p class="lead">Each action costs time, so as a player enters or searches a house, attacks or flees from a zombie; this will spend a certain unit of time. Team members must be fed after every day cycle, if there is not enough food, the player could lose team members. There is no way in which to “complete” the game, the scoring is measured as to how long the player can last. As the game goes on, the difficulty level will increase; zombies will be more likely to appear, more could appear at once and less food/ammunition could become available.</p>
+        </div>
+        <div class="col-lg-4">
+          <img class="img-circle" src="{% static 'images/zombie-face.png'%}" alt="Generic placeholder image" width="140" height="140">
+        </div>
+      </div>
+<br><br>
+      <div class="row">
+        <div class="col-lg-4">
+          <img class="img-circle" src="{% static 'images/guns.png'%}" alt="Generic placeholder image" width="180" height="180">
+        </div>
+        <div class="col-lg-8">
+          <p class="lead">When the player is in a house, the objective is to search that house for resources. But a room may contain zombies, and the user will have to make a rational decision of whether to fight or flee, depending on the resources they currently have. In the event of choosing fight, the player may either overpower the zombies, they may lose party members or they may die.</p>
+        </div>
+      </div>
+      <br><br><br>
 
 
         {% endblock %}

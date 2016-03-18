@@ -46,11 +46,11 @@
                   <li><a href="{% url 'auth_logout' %}?next=/zomba/">Logout</a></li>
                 </ul>
               </li>
-              <li class="pull-right"><a href="{% url 'leaderboard' %}">Leaderboard</a></li>
                 {% else %}
                   <li class="pull-right"><a href="{% url 'auth_login' %}">Login</a></li>
                   <li class="pull-right"><a href="{% url 'registration_register' %}">Register</a></li>
                 {% endif %}
+                <li class="pull-right"><a href="{% url 'leaderboard' %}">Leaderboard</a></li>
                 <li class="pull-right"><a href="{% url 'gallery' %}">Gallery</a></li>
                 <li class="pull-right"><a href="{% url 'about' %}">About</a></li>
               </ul>
