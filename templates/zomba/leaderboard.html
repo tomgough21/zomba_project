@@ -44,59 +44,48 @@
 
           <div class="row placeholders">
             <div class="col-xs-6 col-sm-4 placeholder">
-              <a href="javascript:displayDiv('kills', 'survive','party')">
+              <a href="javascript:displayDiv('kills', 'survive')">
               <img src="{% static 'images/achievements/mostkills.png'%}" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail"></a>
               <h4>Most Kills</h4>
+              <span class="text-muted">Total number of kills per player</span>
             </div>
             <div class="col-xs-6 col-sm-4 placeholder">
-              <a href="javascript:displayDiv('survive', 'kills','party')">
+              <a href="javascript:displayDiv('survive', 'kills')">
               <img src="{% static 'images/achievements/survived.png'%}" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail"></a>
               <h4>Longest time survived</h4>
+              <span class="text-muted">Total survival duration per player</span>
             </div>
-            <div class="col-xs-6 col-sm-4 placeholder">
-              <a href="javascript:displayDiv('party', 'survive','kills')">
-              <img src="{% static 'images/achievements/partymembers.png'%}" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail"></a>
-              <h4>Largest party size</h4>
-            </div>
+          </div>
 
-            <div id="kills" style="display:block; border:none; padding:25px;">
-            <h2 class="sub-header">Most Kills</h2>
+          <br><br><br>
+
+            <div id="kills" style="display:block; border:none; padding-left:25px; padding-top:0px; padding-bottom: 25px;">
+            <h1 class="page-header">Most Kills</h2>
             {% for value in mostKills %}
-            {{value}}
+            <b>{{value.user.username}}</b> has killed <b>{{value.most_kills}}</b> zombies.<br>
             {% endfor%}
             </div>
 
-            <div id="survive" style="display:none; border:none; padding:25px;">
-            <h2 class="sub-header">Longest Time Survived</h2>
+            <div id="survive" style="display:none; border:none; padding-left:25px; padding-top:0px; padding-bottom: 25px;">
+            <h1 class="page-header">Longest Time Survived</h2>
             {% for value in mostDays %}
-            {{value}}
-            {% endfor%}
-            </div>
+            <b>{{value.user.username}}</b> has survived <b>{{value.most_days_survived}}</b> days.<br>
 
-            <div id="party" style="display:none; border:none; padding:25px;">
-            <h2 class="sub-header">Largest Party Size</h2>
-            {% for value in mostPartyMembers %}
-            {{value}}
             {% endfor%}
             </div>
+            <br><br><br><br>
         </div>
-      </div>
-    </div>
-
-<br><br><br><br><br>
 
 <script type="text/javascript">
-function displayDiv(div1,div2,div3)
+function displayDiv(div1,div2)
 {
    //toDisplay = $(".myContainer").load("myOtherHTMLFile.html #firstbox");
    toDisplay = document.getElementById(div1);
-   hideDiv1 = document.getElementById(div2);
-   hideDiv2 = document.getElementById(div3);
+   hideDiv = document.getElementById(div2);
    if( toDisplay.style.display == "none" )
    {
       toDisplay.style.display = "block";
-      hideDiv1.style.display = "none";
-      hideDiv2.style.display = "none";
+      hideDiv.style.display = "none";
    }
 }
 </script>

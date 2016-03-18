@@ -33,7 +33,7 @@ class Player(models.Model):
     #game object
     current_game = models.OneToOneField(InGame, null=True, blank=True)
     def __unicode__(self):
-        return self.user.username + " has killed " + str(self.most_kills) + "\n "
+        return self.user.username
 
 
 class Achievement(models.Model):
