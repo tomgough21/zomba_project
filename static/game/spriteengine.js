@@ -439,11 +439,6 @@ var SpriteEngine = (function () {
         this.refreshDomRotation();
       }
 
-      //css 3.0 offset is wrong?
-      // this.dom_obj.css({
-      //   transform: 'translate(' + (this.position.x - (this.spritestate.sprite.spritesheet.tile_width / 2)) + 'px,' +  (this.position.y - (this.spritestate.sprite.spritesheet.tile_height / 2)) +'px) ' + 'rotate(' + this.rotation.degrees + 'deg)'
-      // });
-
       if (this.spritestate.dirty === true) {
         this.refreshDomSprite();
       }
@@ -451,8 +446,72 @@ var SpriteEngine = (function () {
 
   };
 
+  var terrain_id = 0;
+  function Terrain(scene, container, data, offset_x, offset_y) {
+    this.parent = container
+    this.container = $("<div id = 'terrain_"+ terrain_id + "' />").appendTo($(this.parent));
+    this.container.css("position", "relative");
+    this.container.css("left", offset_x + 'px');
+    this.container.css("top", offset_y + 'px');
+    this.scene = scene;
+    this.data = data;
+    this.group = "terrain_" + terrain_id;
+    this.layers = [];
+    this.visible = false;
+    terrain_id ++ ;
+  }
+
+  Terrain.prototype.setPosition = function(x,y) {
+    //$(this.parent).css('transform', 'translateX(' + Math.round(x) + 'px)');
+    $(this.parent).css( { left : x + 'px', 
+                          top  : y + 'px' }
+                      );
+  }
+
+  Terrain.prototype.clear = function() {
+    this.scene.clearGroup("terrain");
+    $(this.container).empty();
+    this.layers.splice(0,this.layers.length)
+    this.visible = false;
+  }
+
+  Terrain.prototype.draw = function(clear) {
+    if(this.data === undefined){
+      return;
+    }
+
+    if(clear !== undefined) {
+      this.scene.clearGroup(this.group);
+      $(this.container).empty();
+      this.layers.splice(0,this.layers.length)
+    }
+
+    for(var k = 0; k < this.data.layers; k++) {
+      var layer = $('<div/>', {
+        class: 'game_terrain_layer'
+      }).appendTo(this.container);
+      this.layers.push(layer);
+
+      for(var i = 0; i < this.data.width; i++) {
+        var column = jQuery('<div/>', {
+          class: 'game_terrain_column'
+        }).appendTo(layer);
+
+        for(var j = 0; j < this.data.height; j++) {
+          var tileset_name = GameResources.tilesets[this.data.tiles[k][(j*this.data.width)+i][0]].name;
+          var frame_id = this.data.tiles[k][(j*this.data.width)+i][1];
+          var tile = new SpriteEngine.GameObject(this.scene, tileset_name, column).setGroup(this.group).setFrame(frame_id).setScale(2.0);
+        }
+
+      }
+    }
+    this.visible = true;
+  }
+
+
   spriteEngine.Scene = Scene;
   spriteEngine.GameObject = GameObject;
+  spriteEngine.Terrain = Terrain;
 
   return spriteEngine;
 })();

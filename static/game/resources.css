@@ -118,8 +118,8 @@
 
 .zombie {
   position: absolute;
-  width: 46px;
-  height: 49px;
-  background: transparent url(/static/game/images/spritesheets/Male_Zombies.png) 0 0px no-repeat;
+  width: 40px;
+  height: 56px;
+  background: transparent url(/static/game/images/spritesheets/Female_Zombies.png) 0 0px no-repeat;
   z-index: 1900;
 }

@@ -10,7 +10,9 @@ body {
   margin: 0;
   padding: 0;
   border: 1px solid rgb(0,0,0);
-  image-rendering: pixelated; 
+  image-rendering: -moz-crisp-edges;         /* Firefox */
+  image-rendering:   -o-crisp-edges;         /* Opera */
+  image-rendering: pixelated;                /* Chrome */
 }
 
 .game_terrain {

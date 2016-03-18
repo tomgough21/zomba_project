@@ -185,7 +185,7 @@
     
     this.layer_selector.find("option").remove();
     for(var i = 0; i < this.level.layers; i++) {
-      var selected = i == this.active_layer
+      var selected = (i == this.active_layer)
       $('<option />', {value: i, text: "layer " + i, selected: selected}).appendTo(this.layer_selector);
     }
     this.reDraw();

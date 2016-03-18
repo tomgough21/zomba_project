@@ -1,12 +1,4 @@
 (function($) {
-  var level_house = {width : 10, height : 7, tiles : [28, 29, 29, 29, 29, 29, 29, 29, 29, 30,
-                                                      35, 6, 6, 6, 6, 6, 6, 6, 32, 37,
-                                                      35, 6, 0 , 1 , 2 , 54, 55, 6, 39, 37,
-                                                      35, 6, 7 , 8 , 9 , 61, 62, 6, 6, 37,
-                                                      35, 6, 6, 6, 6, 6, 6, 6, 6, 37,
-                                                      35, 6, 6, 6, 6, 6, 6, 6, 6, 37,
-                                                      42, 43, 43, 43, 36, 43, 43, 43, 43, 44]};
-
 
   var extend = function(klass, base) {
     klass.prototype = Object.create(base.prototype);
@@ -46,30 +38,77 @@
     }
 
     this.scene.loadSprite('player', 96, 4, true, 32);
-    this.terrain = new Terrain('game_terrain');
+    this.scene.loadSprite('zombie', 96, 4, true, 32);
+
+    this.terrain = undefined;
     this.player = undefined;
-    this.x = 43;
-    this.y = -48;
+    this.x = 0;
+    this.y = 0;
     this.moveDelta = 0;
     this.movemode = 0;
+
+    this.world = [1,1,1,1,1,1,1,1]
+    this.active_terrain = undefined;
+    this.terrain = []
 
     var that = this;
     
     this.scene.onLoad = function() {
-      for(var i = 0; i < 25; i++) {
-        var column = jQuery('<div/>', {
-          class: 'game_terrain_column'
-        }).appendTo('#game_terrain');
-        for(var j = 0; j < 14; j++) {
-          new SpriteEngine.GameObject(that.scene, GameResources.tilesets[0].name, column).setGroup('terrain').setFrame((j*GameResources.tilesets[0].width)+i).setScale(2.0);
-        }
+      for(var i = 0; i < 8; i++) {
+        var level = that.world[i];
+        that.terrain.push(new SpriteEngine.Terrain(that.scene, "#game_terrain", GameResources.levels[level], GameResources.levels[level].width * (i) * 64, 0 ));
       }
-      that.player = new SpriteEngine.GameObject(that.scene, 'player', '#street_frame').setGroup('street').setPosition(400,200).setScale(2.0);     
+      that.player = new SpriteEngine.GameObject(that.scene, 'player', '#street_frame').setGroup('street').setPosition(450,500).setScale(2.0);
       that.player.spritestate.pause();
+
+      that.updateTerrain();
     }
       
   }
   extend(GameState, GameFramework.State);
+
+  GameState.prototype.getVisibleTerrain = function(x,y) {
+    var x_sum = 0;
+    for(var i = 0; i < this.world.length; i++) {
+      x_sum += (GameResources.levels[this.world[i]].width * 64);
+      if(-this.x < x_sum) {
+        return i;
+      }
+    }
+  }
+
+  GameState.prototype.updateTerrain = function() {
+    var player_chunk = this.getVisibleTerrain(this.x, this.y);
+    if(player_chunk === this.active_terrain) {
+      return;
+    }
+
+    if(this.active_terrain !== undefined) {
+
+      var erase_chunk = undefined;
+      if(this.active_terrain < player_chunk){
+        erase_chunk = this.active_terrain - 1;
+      } else {
+        erase_chunk = this.active_terrain + 1;
+      }
+
+      if(erase_chunk >= 0 && erase_chunk < this.terrain.length) {
+        this.terrain[erase_chunk].clear();
+      }
+
+    }
+
+    this.active_terrain = player_chunk;
+
+    var start_terrain = this.active_terrain -1;
+    for(var i = 0; i < 3; i++) {
+      if((start_terrain + i) >= 0 && (start_terrain + i) < this.terrain.length) {
+        if(this.terrain[start_terrain+i].visible !== true) {
+          this.terrain[start_terrain+i].draw();
+        }
+      }
+    }
+  }
 
   GameState.prototype.reset = function() {
   }
@@ -133,15 +172,18 @@
         this.moveDelta.x -= vec.x;
         this.moveDelta.y -= vec.y;
       }
-      
+      /*
       if(this.movemode === 0) {
-        this.x -= vec.x;
-        this.y -= vec.y;
-        $("#game_terrain").css("left", this.x + 'px');
-        $("#game_terrain").css("top", this.y + 'px');
+        if(this.terrain !== undefined) {
+          this.terrain.setPosition(this.x -= vec.x, this.y -= vec.y);
+        }
       } else if(this.movemode === 1) {
         this.player.setPosition(this.player.position.x + vec.x, this.player.position.y + vec.y);
-      }
+      }*/
+
+      this.terrain[0].setPosition(this.x -= vec.x,0);
+      this.player.setPosition(this.player.position.x, this.player.position.y + vec.y);
+      this.updateTerrain();
     }
 
     this.scene.draw();
@@ -171,31 +213,16 @@
       id: 'game_house'
     }).appendTo("#game_frame");
 
-    this.scene.loadSprite('tileset', 1, 0, true);
-    this.scene.loadSprite('tileset_indoor', 1, 0, true);
-    this.scene.loadSprite('player', 12, 4, true, 4);
-    this.scene.loadSprite('zombie', 18, 4, true, 9);
-    this.terrain = new Terrain('house_terrain');
+    this.terrain = undefined;
     this.player = undefined;
     this.moveDelta = 0;
     this.movemode = 1;
 
-    var that = this;
-
-    this.scene.onLoad = function() {
-      for(var i = 0; i < level_house.width; i++) {
-        var column = jQuery('<div/>', {
-          class: 'game_terrain_column'
-        }).appendTo('#game_house');
-        for(var j = 0; j < level_house.height; j++) {
-          new SpriteEngine.GameObject(that.scene, 'tileset_indoor', column).setGroup('terrain').setFrame(level_house.tiles[(j*level_house.width)+i]).setScale(3.0);
-        }
-      }
-      that.player = new SpriteEngine.GameObject(that.scene, 'player', '#game_house').setGroup('active_house').setPosition(220,260).setScale(1.5).setState(3);     
-      for(var i = 0; i < getRandomInt(0, 5); i++) {
-        new SpriteEngine.GameObject(that.scene, 'zombie', '#game_house').setGroup('active_house').setPosition(getRandomInt(31,381),getRandomInt(35,234)).setScale(1.5); 
-      }
-      that.player.spritestate.pause();
+    this.terrain = new SpriteEngine.Terrain(this.scene, "#game_house", GameResources.levels[0], "active_house");
+    this.player = new SpriteEngine.GameObject(this.scene, 'player', '#game_house').setGroup('active_house').setPosition(220,260).setScale(2).setState(3);
+    this.player.spritestate.pause();
+    for(var i = 0; i < getRandomInt(1, 5); i++) {
+      new SpriteEngine.GameObject(this.scene, 'zombie', '#game_house').setGroup('active_house').setPosition(getRandomInt(31,381),getRandomInt(35,234)).setScale(2); 
     }
   }
   extend(HouseState, GameFramework.State);
@@ -238,15 +265,15 @@
       }else {
         if( Math.abs(vec.x) > Math.abs(vec.y) ) {
           if(vec.x > 0) {
-            this.player.spritestate.setState(2);
+            this.player.spritestate.setState(8);
           }else {
-            this.player.spritestate.setState(1);
+            this.player.spritestate.setState(4);
           }
         } else {
           if(vec.y > 0) {
             this.player.spritestate.setState(0);
           }else {
-            this.player.spritestate.setState(3);
+            this.player.spritestate.setState(12);
           }
         }
         this.player.spritestate.play();
@@ -273,8 +300,6 @@
   HouseState.prototype.click = function(e) {
     this.moveDelta = { x : e.relative.x - this.player.position.x, y : e.relative.y - this.player.position.y};
   }
-
-  function Terrain(res) {}
 
   window.app = {
     init: function() {
