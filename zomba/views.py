@@ -21,7 +21,11 @@ def about(request):
 	return render(request, 'zomba/about.html')
 
 def leaderboard(request):
-    return render(request, 'zomba/leaderboard.html')
+    mostDays = Player.objects.order_by('-most_days_survived')[:20]
+    mostKills = Player.objects.order_by('-most_kills')[:20]
+    mostPartyMembers = Player.objects.order_by('-most_people')[:20]
+    context_dict = {'mostDays':mostDays,'mostKills':mostKills,'mostPartyMembers':mostPartyMembers}
+    return render(request, 'zomba/leaderboard.html',context_dict)
     
 def achievements(request):
     return render(request, 'zomba/achievements.html')

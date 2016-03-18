@@ -10,19 +10,19 @@ def populate():
     #automate admin password and player profile:
     setup_admin_account()
     #add a standard user
-    add_user('p3p','p3p@p3psoft.co.uk','password')
-    add_user('test','test@test.com','12345')
-    add_user('jill','jill@test.com','jill')
-    add_user('bob','bob@test.com','bob')
-    add_user('jen','jen@test.com','jen')
+    add_user('p3p','p3p@p3psoft.co.uk','password',0,0,0)
+    add_user('test','test@test.com','12345',0,0,0)
+    add_user('jill','jill@test.com','jill',0,0,0)
+    add_user('bob','bob@test.com','bob',0,0,0)
+    add_user('jen','jen@test.com','jen',0,0,0)
     #add your test users here
 
-def add_user(username, email, password):
+def add_user(username, email, password,mostKills,mostDays,mostPartyMembers):
     user = User.objects.get_or_create(username=username, email=email)[0]
     user.set_password(password)
     user.save()
     #create the Player profile
-    profile = Player.objects.get_or_create(user = user);
+    profile = Player.objects.get_or_create(user = user,most_kills=mostKills,most_days_survived=mostDays,most_people=mostPartyMembers)
     return user
 
 def setup_admin_account():

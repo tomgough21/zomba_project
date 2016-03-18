@@ -52,7 +52,7 @@ class House(object):
 
 
     def create_rooms(self, player_state):
-        number_of_rooms = random.randint(7,13)
+        number_of_rooms = random.randint(4,9)
 
         for i in range(0, number_of_rooms):
 
