@@ -1,0 +1,59 @@
+body {
+  background: #fff;
+}
+
+#game_frame {
+  position: relative;
+  width: 1024px;
+  height: 768px;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  border: 1px solid rgb(0,0,0);
+  image-rendering: pixelated; 
+}
+
+.game_terrain {
+  width: 9999px;
+  position: relative;
+}
+
+.game_terrain_layer {
+  position: absolute;
+}
+
+.game_terrain_column {
+  float: left;
+}
+
+.game_terrain_tile {
+}
+
+#game_top_gui {
+  position: absolute;
+  width: 100%;
+  height: 30px;
+  z-index: 3000;
+  padding-top: 20px;
+  background-color: rgba(0,0,0,0.5);
+  color: rgb(255,255,255);
+}
+
+#game_score {
+  text-align: center;
+  float: left;
+  width: 24%;
+}
+
+#game_lives {
+  text-align: center;
+  float: left;
+  width: 24%;
+}
+
+#game_active_word {
+  text-align: center;
+  float: left;
+  width: 50%;
+  font-size: 1.5em;
+}

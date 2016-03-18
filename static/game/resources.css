@@ -1,0 +1,125 @@
+.mark_grid {
+  box-sizing: border-box;
+  border: 1px solid rgb(0,0,0);
+}
+
+.tileset_water {
+  width: 32px;
+  height: 32px;
+  background: transparent url(/static/game/images/tilesets/TileA1_PHC_Water.png) 0 0px no-repeat;
+  z-index: 1000;
+}
+
+.tileset_floor {
+  width: 32px;
+  height: 32px;
+  background: transparent url(/static/game/images/tilesets/TileA2_PHC_General-Flooring.png) 0 0px no-repeat;
+  z-index: 1000;
+}
+
+.tileset_exterior_buildings {
+  width: 32px;
+  height: 32px;
+  background: transparent url(/static/game/images/tilesets/TileA3_PHC_Exterior-Buildings.png) 0 0px no-repeat;
+  z-index: 1000;
+}
+
+.tileset_exterior_general {
+  width: 32px;
+  height: 32px;
+  background: transparent url(/static/game/images/tilesets/TileA4_PHC_Exterior-General.png) 0 0px no-repeat;
+  z-index: 1000;
+}
+
+.tileset_interior_general {
+  width: 32px;
+  height: 32px;
+  background: transparent url(/static/game/images/tilesets/TileA4_PHC_Interior-General.png) 0 0px no-repeat;
+  z-index: 1000;
+}
+
+.tileset_exterior_general2 {
+  width: 32px;
+  height: 32px;
+  background: transparent url(/static/game/images/tilesets/TileA5_PHC_Exterior-General.png) 0 0px no-repeat;
+  z-index: 1000;
+}
+
+.tileset_interior_appartments {
+  width: 32px;
+  height: 32px;
+  background: transparent url(/static/game/images/tilesets/TileA5_PHC_Interior-Apartments.png) 0 0px no-repeat;
+  z-index: 1000;
+}
+
+.tileset_exterior_city {
+  width: 32px;
+  height: 32px;
+  background: transparent url(/static/game/images/tilesets/TileB_PHC_Exterior-City.png) 0 0px no-repeat;
+  z-index: 1000;
+}
+
+.tileset_interior_modern_appartments {
+  width: 32px;
+  height: 32px;
+  background: transparent url(/static/game/images/tilesets/TileB_PHC_Interior-AptModern.png) 0 0px no-repeat;
+  z-index: 1000;
+}
+
+.tileset_exterior_stairs {
+  width: 32px;
+  height: 32px;
+  background: transparent url(/static/game/images/tilesets/TileC_PHC_Exterior-Rails&Stairs.png) 0 0px no-repeat;
+  z-index: 1000;
+}
+
+.tileset_interior_office {
+  width: 32px;
+  height: 32px;
+  background: transparent url(/static/game/images/tilesets/TileC_PHC_Interior-Office&Facility.png) 0 0px no-repeat;
+  z-index: 1000;
+}
+
+.tileset_exterior_window_doors {
+  width: 32px;
+  height: 32px;
+  background: transparent url(/static/game/images/tilesets/TileD_PHC_Exterior-Windows&Doors.png) 0 0px no-repeat;
+  z-index: 1000;
+}
+
+.tileset_interior_delapidated {
+  width: 32px;
+  height: 32px;
+  background: transparent url(/static/game/images/tilesets/TileD_PHC_Interior-Delapidated.png) 0 0px no-repeat;
+  z-index: 1000;
+}
+
+.tileset_exterior_nature {
+  width: 32px;
+  height: 32px;
+  background: transparent url(/static/game/images/tilesets/TileE_PHC_Exterior-Nature.png) 0 0px no-repeat;
+  z-index: 1000;
+}
+
+.tileset_interior_extra {
+  width: 32px;
+  height: 32px;
+  background: transparent url(/static/game/images/tilesets/TileE_PHC_Interior-Extras.png) 0 0px no-repeat;
+  z-index: 1000;
+}
+
+.player {
+  position: absolute;
+  width: 32px;
+  height: 56px;
+  background: transparent url(/static/game/images/spritesheets/Male_Heroes.png) 0 0px no-repeat;
+  z-index: 2000;
+}
+
+.zombie {
+  position: absolute;
+  width: 46px;
+  height: 49px;
+  background: transparent url(/static/game/images/spritesheets/Male_Zombies.png) 0 0px no-repeat;
+  z-index: 1900;
+}

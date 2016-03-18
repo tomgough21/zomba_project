@@ -1,0 +1,42 @@
+#game_top_gui {
+  position: absolute;
+  width: 100%;
+  height: 60px;
+  z-index: 3000;
+  padding-top: 20px;
+  background-color: rgba(0,0,0,0.5);
+  color: rgb(255,255,255);
+}
+
+#editor_layer_select {
+  text-align: center;
+  float: left;
+  width: 24%;
+}
+
+#editor_save_button {
+  text-align: center;
+  float: left;
+  width: 24%;
+}
+
+#editor_stuff {
+  text-align: center;
+  float: left;
+  width: 50%;
+  font-size: 1.5em;
+}
+
+a:link {
+    background-color: white;
+}
+
+#tiles_frame {
+  position: absolute;
+  overflow: scroll;
+  top: 0px;
+  left: 1050px;
+  width: 600px;
+  height: 800px;
+  float: right;
+}

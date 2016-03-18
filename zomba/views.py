@@ -165,3 +165,10 @@ def engine_debug(request):
         return render(request,'zomba/engine_debug.html')
     else:
         return HttpResponseRedirect('/zomba/')
+
+@login_required
+def engine_editor(request):
+    if request.user.is_superuser:
+        return render(request,'zomba/engine_editor.html')
+    else:
+        return HttpResponseRedirect('/zomba/')
