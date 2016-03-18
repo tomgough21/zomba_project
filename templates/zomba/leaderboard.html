@@ -60,17 +60,30 @@
             </div>
 
             <div id="kills" style="display:block; border:none; padding:25px;">
-          <h2 class="sub-header">Most Kills</h2>
-          <ul>
-          <li><a href='#tabs-1'>Most Kills</a></li>
-          <li><a href='#tabs-2'>Longest time survived</a></li>
-          <li><a href='#tabs-3'>Largest party size</a></li>
+            <h2 class="sub-header">Most Kills</h2>
+            {% for value in mostKills %}
+            {{value}}
+            {% endfor%}
+            </div>
 
-          </ul>
+            <div id="survive" style="display:none; border:none; padding:25px;">
+            <h2 class="sub-header">Longest Time Survived</h2>
+            {% for value in mostDays %}
+            {{value}}
+            {% endfor%}
+            </div>
 
-        {% for value in mostDays%}
-		{{value}}
-		{% endfor%}
+            <div id="party" style="display:none; border:none; padding:25px;">
+            <h2 class="sub-header">Largest Party Size</h2>
+            {% for value in mostPartyMembers %}
+            {{value}}
+            {% endfor%}
+            </div>
+        </div>
+      </div>
+    </div>
+
+<br><br><br><br><br>
 
 <script type="text/javascript">
 function displayDiv(div1,div2,div3)
@@ -86,12 +99,6 @@ function displayDiv(div1,div2,div3)
       hideDiv2.style.display = "none";
    }
 }
-</script>
-
-<script type="text/javascript">
-jQuery(function($){
-  $('#result').load('Page2.html #intro');
-});
 </script>
 
 

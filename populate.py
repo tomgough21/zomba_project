@@ -10,7 +10,7 @@ def populate():
     #automate admin password and player profile:
     setup_admin_account()
     #add a standard user
-    add_user('p3p','p3p@p3psoft.co.uk','password',0,0,0)
+    add_user('p3p','p3p@p3psoft.co.uk','password',0,1,2)
     add_user('test','test@test.com','12345',0,0,0)
     add_user('jill','jill@test.com','jill',0,0,0)
     add_user('bob','bob@test.com','bob',0,0,0)

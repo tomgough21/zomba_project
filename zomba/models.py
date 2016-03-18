@@ -23,7 +23,6 @@ class InGame(models.Model):
         return self.game_state
 
 class Player(models.Model):
-
     user = models.OneToOneField(User)
     profile_picture = models.ImageField(upload_to='profile_images', blank=True)
     #global statistics
@@ -34,7 +33,7 @@ class Player(models.Model):
     #game object
     current_game = models.OneToOneField(InGame, null=True, blank=True)
     def __unicode__(self):
-        return self.user.username + " has killed " + self.most_kills
+        return self.user.username + " has killed " + str(self.most_kills) + "\n "
 
 
 class Achievement(models.Model):
