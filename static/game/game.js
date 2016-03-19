@@ -47,7 +47,8 @@
     this.moveDelta = 0;
     this.movemode = 0;
 
-    this.world = [1,1,1,1,1,1,1,1]
+    this.world = [1,1,1,1,1,1,1,1] // setup street array
+    this.world_width = 0;
     this.active_terrain = undefined;
     this.terrain = []
 
@@ -56,7 +57,8 @@
     this.scene.onLoad = function() {
       for(var i = 0; i < 8; i++) {
         var level = that.world[i];
-        that.terrain.push(new SpriteEngine.Terrain(that.scene, "#game_terrain", GameResources.levels[level], GameResources.levels[level].width * (i) * 64, 0 ));
+        that.terrain.push(new SpriteEngine.Terrain(that.scene, "#game_terrain", GameResources.levels[level], that.world_width, 0 ));
+        that.world_width += (GameResources.levels[level].width * 64); //64 is the tilewidth
       }
       that.player = new SpriteEngine.GameObject(that.scene, 'player', '#street_frame').setGroup('street').setPosition(450,500).setScale(2.0);
       that.player.spritestate.pause();
@@ -66,6 +68,15 @@
       
   }
   extend(GameState, GameFramework.State);
+
+  GameState.prototype.playerInRect = function(x1, x2, y1, y2) {
+    var x = this.x;
+    var y = this.player.position.y;
+    if ((x1 <= x) && (x <= x2) && (y1 <= y) && (y <= y2)) {
+     return true;
+    }
+    return false;
+  }
 
   GameState.prototype.getVisibleTerrain = function(x,y) {
     var x_sum = 0;
@@ -139,14 +150,12 @@
 
       if(vec.x === 0 && vec.y === 0) {
         this.player.spritestate.pause();
-        //house hack
-        if(this.x < 226 && this.x > 187 && this.y < -43 && this.y > -86) {
-          this.framework.pushState(new HouseState(this.scene));
-        }
-        if(this.x < -63 && this.x > -96 && this.y < -44 && this.y > - 80) {
-          this.framework.pushState(new HouseState(this.scene));
-        }
-        if(this.x < -348 && this.x > -385 && this.y < -45 && this.y > - 77) {
+
+        var door = this.terrain[this.active_terrain].data.door;
+        var door_offsetx = this.terrain[this.active_terrain].x;
+        var door_offsety = this.terrain[this.active_terrain].y;
+
+        if(this.playerInRect(door.x1 - door_offsetx, door.x2 - door_offsetx, door.y1 + door_offsety, door.y2 + door_offsety)) {
           this.framework.pushState(new HouseState(this.scene));
         }
 
@@ -172,16 +181,18 @@
         this.moveDelta.x -= vec.x;
         this.moveDelta.y -= vec.y;
       }
-      /*
-      if(this.movemode === 0) {
-        if(this.terrain !== undefined) {
-          this.terrain.setPosition(this.x -= vec.x, this.y -= vec.y);
-        }
-      } else if(this.movemode === 1) {
-        this.player.setPosition(this.player.position.x + vec.x, this.player.position.y + vec.y);
-      }*/
 
-      this.terrain[0].setPosition(this.x -= vec.x,0);
+      //stop walking backwards of screen
+      this.x -= vec.x
+      if(this.x > 0) {
+        this.x = 0;
+      }
+
+      if(this.x < (-(this.world_width - this.terrain[this.terrain.length-1].width))) {
+        this.x = (-(this.world_width - this.terrain[this.terrain.length-1].width));
+      }
+
+      this.terrain[0].setPosition(this.x,0);
       this.player.setPosition(this.player.position.x, this.player.position.y + vec.y);
       this.updateTerrain();
     }
@@ -210,28 +221,77 @@
   function HouseState(scene) {
     GameFramework.State.call(this, scene);
     jQuery('<div/>', {
-      id: 'game_house'
+      id: 'house_frame'
     }).appendTo("#game_frame");
+    
+    jQuery('<div/>', {
+      id: 'house_terrain',
+      class: 'game_terrain'
+    }).appendTo('#house_frame');
 
     this.terrain = undefined;
     this.player = undefined;
+    this.x = 0;
+    this.y = 0;
     this.moveDelta = 0;
-    this.movemode = 1;
+    this.movemode = 0;
 
-    this.terrain = new SpriteEngine.Terrain(this.scene, "#game_house", GameResources.levels[0], "active_house");
-    this.player = new SpriteEngine.GameObject(this.scene, 'player', '#game_house').setGroup('active_house').setPosition(220,260).setScale(2).setState(3);
-    this.player.spritestate.pause();
-    for(var i = 0; i < getRandomInt(1, 5); i++) {
-      new SpriteEngine.GameObject(this.scene, 'zombie', '#game_house').setGroup('active_house').setPosition(getRandomInt(31,381),getRandomInt(35,234)).setScale(2); 
+    //this.world = [2]
+    this.world = [4,3,2,3,5] // setup coridor array
+    this.world_width = 0;
+    this.active_terrain = undefined;
+    this.terrain = []
+
+    var that = this;
+    
+    this.scene.onLoad = function() {
+      for(var i = 0; i < that.world.length; i++) {
+        var level = that.world[i];
+        that.terrain.push(new SpriteEngine.Terrain(that.scene, "#house_terrain", GameResources.levels[level], that.world_width, 0 ));
+        that.world_width += (GameResources.levels[level].width * 64); //64 is the tilewidth
+        that.terrain[i].draw();
+      }
+      that.player = new SpriteEngine.GameObject(that.scene, 'player', '#house_frame').setGroup('active_house').setPosition(450,500).setScale(2.0);
+
+      that.updateTerrain();
     }
   }
   extend(HouseState, GameFramework.State);
+
+  HouseState.prototype.playerInRect = function(x1, x2, y1, y2) {
+    var x = this.x;
+    var y = this.player.position.y;
+    if ((x1 <= x) && (x <= x2) && (y1 <= y) && (y <= y2)) {
+     return true;
+    }
+    return false;
+  }
+
+  HouseState.prototype.getVisibleTerrain = function(x,y) {
+    var x_sum = 0;
+    for(var i = 0; i < this.world.length; i++) {
+      var oldsum = x_sum;
+      x_sum += (GameResources.levels[this.world[i]].width * 64);
+      if(-x < x_sum && -x > oldsum) {
+        return i;
+      }
+    }
+  }
+
+  HouseState.prototype.updateTerrain = function() {
+    var player_chunk = this.getVisibleTerrain(this.x - this.player.position.x, this.y);
+    if(player_chunk === this.active_terrain) {
+      return;
+    }
+    console.log("new chunk " + player_chunk );
+    this.active_terrain = player_chunk;
+  }
 
   HouseState.prototype.reset = function() {
   }
 
   HouseState.prototype.destroy = function() {
-    $("#game_house").remove();
+    $("#house_frame").remove();
     this.scene.clearGroup("active_house");
   }
 
@@ -257,8 +317,26 @@
 
       if(vec.x === 0 && vec.y === 0) {
         this.player.spritestate.pause();
-        if(this.player.position.x > 202 && this.player.position.x < 233 && this.player.position.y >298 && this.player.position.y < 328) {
-          this.framework.popState();
+
+        if(this.terrain[this.active_terrain].data.door != undefined) {
+          var door = this.terrain[this.active_terrain].data.door;
+          var door_offsetx = this.terrain[this.active_terrain].x;
+          var door_offsety = this.terrain[this.active_terrain].y;
+
+          if(this.playerInRect(door.x1 - door_offsetx, door.x2 - door_offsetx, door.y1 + door_offsety, door.y2 + door_offsety)) {
+            this.framework.pushState(new RoomState(this.scene));
+          }
+        }
+
+        if(this.terrain[this.active_terrain].data.exit != undefined) {
+          var door = this.terrain[this.active_terrain].data.exit;
+          var door_offsetx = this.terrain[this.active_terrain].x;
+          var door_offsety = this.terrain[this.active_terrain].y;
+
+          if(this.playerInRect(door.x1 - door_offsetx, door.x2 - door_offsetx, door.y1 + door_offsety, door.y2 + door_offsety)) {
+            this.framework.popState();
+          }
+
         }
 
         this.moveDelta = undefined;
@@ -283,21 +361,194 @@
         this.moveDelta.x -= vec.x;
         this.moveDelta.y -= vec.y;
       }
+
       
-      if(this.movemode === 0) {
-        x -= vec.x;
-        y -= vec.y;
-        $("#game_terrain").css("left", x + 'px');
-        $("#game_terrain").css("top", y + 'px');
-      } else if(this.movemode === 1) {
-        this.player.setPosition(this.player.position.x + vec.x, this.player.position.y + vec.y);
+      //stop walking backwards of screen
+      this.x -= vec.x
+      /*if(this.x > 0) {
+        this.x = 0;
       }
+      if(this.x < (-(this.world_width - this.terrain[this.terrain.length-1].width))) {
+        this.x = (-(this.world_width - this.terrain[this.terrain.length-1].width));
+      }
+      */
+
+      this.terrain[0].setPosition(this.x, 0);
+      this.player.setPosition(this.player.position.x, this.player.position.y + vec.y);
+      this.updateTerrain();
     }
     
     this.scene.draw();
   }
 
+  HouseState.prototype.blur = function(dom) {
+    GameFramework.State.prototype.blur.call(this, dom);
+    $('#house_frame').hide()
+  }
+
+  HouseState.prototype.focus = function(dom) {
+    GameFramework.State.prototype.focus.call(this, dom);
+     $('#house_frame').show()
+  }
+
   HouseState.prototype.click = function(e) {
+    this.moveDelta = { x : e.relative.x - this.player.position.x, y : e.relative.y - this.player.position.y};
+  }
+
+    function RoomState(scene) {
+    GameFramework.State.call(this, scene);
+    jQuery('<div/>', {
+      id: 'room_frame'
+    }).appendTo("#game_frame");
+    
+    jQuery('<div/>', {
+      id: 'room_terrain',
+      class: 'game_terrain'
+    }).appendTo('#room_frame');
+
+    this.terrain = undefined;
+    this.player = undefined;
+    this.x = 0;
+    this.y = 0;
+    this.moveDelta = 0;
+    this.movemode = 0;
+
+    //this.world = [2]
+    this.world = [0] // setup coridor array
+    this.world_width = 0;
+    this.active_terrain = undefined;
+    this.terrain = []
+
+    var that = this;
+    
+    this.scene.onLoad = function() {
+      for(var i = 0; i < that.world.length; i++) {
+        var level = that.world[i];
+        that.terrain.push(new SpriteEngine.Terrain(that.scene, "#room_terrain", GameResources.levels[level], that.world_width, 0 ));
+        that.world_width += (GameResources.levels[level].width * 64); //64 is the tilewidth
+        that.terrain[i].draw();
+      }
+      that.player = new SpriteEngine.GameObject(that.scene, 'player', '#room_frame').setGroup('active_room').setPosition(450,500).setScale(2.0);
+
+      that.updateTerrain();
+    }
+  }
+  extend(RoomState, GameFramework.State);
+
+  RoomState.prototype.playerInRect = function(x1, x2, y1, y2) {
+    var x = this.x;
+    var y = this.player.position.y;
+    if ((x1 <= x) && (x <= x2) && (y1 <= y) && (y <= y2)) {
+     return true;
+    }
+    return false;
+  }
+
+  RoomState.prototype.getVisibleTerrain = function(x,y) {
+    var x_sum = 0;
+    for(var i = 0; i < this.world.length; i++) {
+      var oldsum = x_sum;
+      x_sum += (GameResources.levels[this.world[i]].width * 64);
+      if(-x <= x_sum && -x > oldsum) {
+        return i;
+      }
+    }
+  }
+
+  RoomState.prototype.updateTerrain = function() {
+    var player_chunk = this.getVisibleTerrain(this.x - this.player.position.x, this.y);
+    if(player_chunk === this.active_terrain) {
+      return;
+    }
+    this.active_terrain = player_chunk;
+  }
+
+  RoomState.prototype.reset = function() {
+  }
+
+  RoomState.prototype.destroy = function() {
+    $("#room_frame").remove();
+    this.scene.clearGroup("active_room");
+  }
+
+  RoomState.prototype.update = function(delta) {
+    GameFramework.State.prototype.update.call(this, delta);
+    if(this.player !== undefined && this.moveDelta !== undefined) {
+
+      var vec = {x : 0, y : 0};
+      var moveMagnitude = Math.sqrt(this.moveDelta.x * this.moveDelta.x + this.moveDelta.y * this.moveDelta.y);
+      if(moveMagnitude){
+        vec = {x: this.moveDelta.x / moveMagnitude, y: this.moveDelta.y / moveMagnitude};
+      }
+
+      vec.x = vec.x * 120 * delta;
+      vec.y = vec.y * 120 * delta;
+
+      if(Math.abs(vec.x) > Math.abs(this.moveDelta.x)) {
+        vec.x = this.moveDelta.x;
+      }
+      if(Math.abs(vec.y) > Math.abs(this.moveDelta.y)) {
+        vec.y = this.moveDelta.y;
+      }
+
+      if(vec.x === 0 && vec.y === 0) {
+        this.player.spritestate.pause();
+
+        if(this.terrain[this.active_terrain].data.door != undefined) {
+          var door = this.terrain[this.active_terrain].data.door;
+          var door_offsetx = this.terrain[this.active_terrain].x;
+          var door_offsety = this.terrain[this.active_terrain].y;
+
+          if(this.playerInRect(door.x1 - door_offsetx, door.x2 - door_offsetx, door.y1 + door_offsety, door.y2 + door_offsety)) {
+            this.framework.pushState(new RoomState(this.scene));
+          }
+        }
+
+        if(this.terrain[this.active_terrain].data.exit != undefined) {
+          var door = this.terrain[this.active_terrain].data.exit;
+          var door_offsetx = this.terrain[this.active_terrain].x;
+          var door_offsety = this.terrain[this.active_terrain].y;
+
+          if(this.playerInRect(door.x1 - door_offsetx, door.x2 - door_offsetx, door.y1 + door_offsety, door.y2 + door_offsety)) {
+            this.framework.popState();
+          }
+
+        }
+
+        this.moveDelta = undefined;
+      }else {
+        if( Math.abs(vec.x) > Math.abs(vec.y) ) {
+          if(vec.x > 0) {
+            this.player.spritestate.setState(8);
+          }else {
+            this.player.spritestate.setState(4);
+          }
+        } else {
+          if(vec.y > 0) {
+            this.player.spritestate.setState(0);
+          }else {
+            this.player.spritestate.setState(12);
+          }
+        }
+        this.player.spritestate.play();
+      }
+
+      if(this.moveDelta) {
+        this.moveDelta.x -= vec.x;
+        this.moveDelta.y -= vec.y;
+      }
+
+      this.x -= vec.x
+
+      this.terrain[0].setPosition(this.x, 0);
+      this.player.setPosition(this.player.position.x, this.player.position.y + vec.y);
+      this.updateTerrain();
+    }
+    
+    this.scene.draw();
+  }
+
+  RoomState.prototype.click = function(e) {
     this.moveDelta = { x : e.relative.x - this.player.position.x, y : e.relative.y - this.player.position.y};
   }
 

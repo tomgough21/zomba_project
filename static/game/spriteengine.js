@@ -449,10 +449,12 @@ var SpriteEngine = (function () {
   var terrain_id = 0;
   function Terrain(scene, container, data, offset_x, offset_y) {
     this.parent = container
-    this.container = $("<div id = 'terrain_"+ terrain_id + "' />").appendTo($(this.parent));
+    this.container = $( "<div id = '" + container + '_' + terrain_id + "' />" ).appendTo($(this.parent));
     this.container.css("position", "relative");
     this.container.css("left", offset_x + 'px');
     this.container.css("top", offset_y + 'px');
+    this.x = offset_x;
+    this.y = offset_y;
     this.scene = scene;
     this.data = data;
     this.group = "terrain_" + terrain_id;
@@ -462,10 +464,8 @@ var SpriteEngine = (function () {
   }
 
   Terrain.prototype.setPosition = function(x,y) {
-    //$(this.parent).css('transform', 'translateX(' + Math.round(x) + 'px)');
     $(this.parent).css( { left : x + 'px', 
-                          top  : y + 'px' }
-                      );
+                          top  : y + 'px' } );
   }
 
   Terrain.prototype.clear = function() {
