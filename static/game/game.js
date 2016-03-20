@@ -67,10 +67,22 @@
     $("#game_start_screen").hide();
   }
 
-  function updateStats(state){
+  function updateStats(that, state){
     $('#game_score').text("Ammo: "+ state.player.ammo + " Food: " + state.player.food );
     $('#time_left_box').text('Daylight left: ' + state.time_left + "");
     $('#game_lives').text("Party: " + state.player.party );
+
+    if(state.game_state == "DAY_OVER" || state.game_state == "GAME_OVER") {
+      while(that.framework.states.length > 2) { //remove all states back to required level
+        that.framework.popState();
+      }
+      if(state.game_state == "DAY_OVER") {
+        that.framework.pushState(new EndDayState(that.scene));
+      } else {
+        that.framework.pushState(new GameOverState(that.scene));
+      }
+    }
+
   }
 
   function GameState(scene) {
@@ -104,7 +116,7 @@
       e.stopPropagation();
       that.scene.sendCommand( { instruction: 'take_turn', turn: 'WAIT', data1: that.active_terrain}, function( response ) {
         that.scene.remote_state = response.state;
-        updateStats(response.state);
+        updateStats(that, response.state);
       } );
     });
 
@@ -115,7 +127,7 @@
 
     this.terrain = undefined;
     this.player = undefined;
-    this.x = 0;
+    this.x = -(this.scene.remote_state.street.current_house * (GameResources.levels[1].width * 64));
     this.y = 0;
     this.moveDelta = 0;
     this.movemode = 0;
@@ -139,7 +151,7 @@
       that.player.spritestate.pause();
       that.updateTerrain();
     }
-      
+    
   }
   extend(GameState, GameFramework.State);
 
@@ -199,15 +211,18 @@
   }
 
   GameState.prototype.destroy = function() {
-    $("#game_terrain").remove();
-    this.player.kill();
+    $("#street_frame").remove();
+    $("#game_top_gui").remove();
   }
 
   GameState.prototype.update = function(delta) {
     GameFramework.State.prototype.update.call(this, delta);
-
+    
+    if(this.scene.remote_state.game_state == "GAME_OVER") {
+      updateStats(this, this.scene.remote_state);
+    }
     //states out of sync
-    if(this.scene.remote_state.game_state != "STREET") {
+    if(this.scene.remote_state.game_state == "HOUSE") {
       this.framework.pushState(new HouseState(this.scene, this.scene.remote_state.house.num_of_rooms));
     }
 
@@ -242,7 +257,7 @@
             that.scene.sendCommand( { instruction: 'take_turn', turn: 'ENTER', data1: that.active_terrain}, function( response ) {
               that.scene.remote_state = response.state;
               that.framework.pushState(new HouseState(that.scene, that.scene.remote_state.house.num_of_rooms));
-              updateStats(response.state);
+              updateStats(that, response.state);
             } );
           } );
         }
@@ -326,7 +341,7 @@
 
     this.terrain = undefined;
     this.player = undefined;
-    this.x = 0;
+    this.x = -((this.scene.remote_state.house.current_room * (GameResources.levels[2].width * 64)) - 250); //250 is player offset
     this.y = 0;
     this.moveDelta = 0;
     this.movemode = 0;
@@ -403,7 +418,7 @@
   HouseState.prototype.update = function(delta) {
     GameFramework.State.prototype.update.call(this, delta);
 
-    if(this.scene.remote_state.game_state != "HOUSE") {
+    if(this.scene.remote_state.game_state == "ZOMBIE") {
       this.framework.pushState(new RoomState(this.scene));
     }
 
@@ -438,7 +453,7 @@
             this.scene.sendCommand( { instruction: 'take_turn', turn: 'SEARCH', data1: this.active_terrain}, function( response ) { //choice to enter seems redundant
               that.scene.remote_state = response.state;
               that.framework.pushState(new RoomState(that.scene));
-              updateStats(response.state);
+              updateStats(that, response.state);
             });
           }
         }
@@ -453,7 +468,7 @@
             this.scene.sendCommand( { instruction: 'take_turn', turn: 'EXIT', data1: this.active_terrain}, function( response ) { //choice to enter seems redundant
               that.scene.remote_state = response.state;
               that.framework.popState();
-              updateStats(response.state);
+              updateStats(that, response.state);
             });
           }
 
@@ -513,56 +528,6 @@
 
   HouseState.prototype.click = function(e) {
     this.moveDelta = { x : e.relative.x - this.player.position.x, y : e.relative.y - this.player.position.y};
-  }
-
-  function ZombieState(scene) {
-    GameFramework.State.call(this, scene);
-    //Resource preloading
-    for(var i = 0; i < GameResources.tilesets.length; i++) {
-      scene.loadSprite(GameResources.tilesets[i].name, 1, 0, true);
-    }
-
-    this.scene.loadSprite('player', 96, 4, true, 32);
-    this.scene.loadSprite('zombie', 96, 4, true, 32);
-
-    this.scene.remote_state = {}
-    this.newgame = false;
-
-    var gui = $("#game_frame");
-    var that = this;
-    gui.append($('<div/>', {class: 'game_popup', id:'game_zombie_screen'})
-      .text("Zombies .. AAAAH!")
-      .append($('<div/>', {class: 'scorebox', style: 'font-size: 0.4em;'}))
-      .append($('<div/>', {class: 'game_popup_button', id: 'game_attack_button'}).text("Attack!")
-        .click(function(e) {
-          that.scene.sendCommand( { instruction: 'take_turn', turn: 'FIGHT', data1: 0}, function( response ) { 
-            that.scene.remote_state = response.state;
-            that.framework.popState(); //close popup
-            updateStats(response.state);
-          });
-        })
-      ).append($('<div/>', {class: 'game_popup_button', id: 'game_flee_button'}).text("Flee!")
-        .click(function(e) {
-          that.scene.sendCommand( { instruction: 'take_turn', turn: 'RUN', data1: 0}, function( response ) { 
-            that.scene.remote_state = response.state;
-            that.framework.popState(); //close popup
-            that.framework.popState(); //leave room
-            that.framework.popState(); //leave house
-            updateStats(response.state);
-          });
-
-        })
-      )
-    );
-
-    this.scene.onLoad = function() {
-
-    }
-  }
-  extend(ZombieState, GameFramework.State);
-
-  ZombieState.prototype.destroy = function() {
-    $("#game_zombie_screen").remove();
   }
 
   function RoomState(scene) {
@@ -724,6 +689,89 @@
 
   RoomState.prototype.click = function(e) {
     this.moveDelta = { x : e.relative.x - this.player.position.x, y : e.relative.y - this.player.position.y};
+  }
+
+  function ZombieState(scene) {
+    GameFramework.State.call(this, scene);
+    //Resource preloading
+    var gui = $("#game_frame");
+    var that = this;
+    gui.append($('<div/>', {class: 'game_popup', id:'game_zombie_screen'})
+      .text("Zombies .. AAAAH!")
+      .append($('<div/>', {class: 'scorebox', style: 'font-size: 0.4em;'}))
+      .append($('<div/>', {class: 'game_popup_button', id: 'game_attack_button'}).text("Attack!")
+        .click(function(e) {
+          that.scene.sendCommand( { instruction: 'take_turn', turn: 'FIGHT', data1: 0}, function( response ) { 
+            that.scene.remote_state = response.state;
+            that.framework.popState(); //close popup
+            updateStats(that, response.state);
+          });
+        })
+      ).append($('<div/>', {class: 'game_popup_button', id: 'game_flee_button'}).text("Flee!")
+        .click(function(e) {
+          that.scene.sendCommand( { instruction: 'take_turn', turn: 'RUN', data1: 0}, function( response ) { 
+            that.scene.remote_state = response.state;
+            that.framework.popState(); //close popup
+            that.framework.popState(); //leave room
+            that.framework.popState(); //leave house
+            updateStats(that, response.state);
+          });
+
+        })
+      )
+    );
+  }
+  extend(ZombieState, GameFramework.State);
+
+  ZombieState.prototype.destroy = function() {
+    $("#game_zombie_screen").remove();
+  }
+
+  function EndDayState(scene) {
+    GameFramework.State.call(this, scene);
+
+    var gui = $("#game_frame");
+    var that = this;
+    gui.append($('<div/>', {class: 'game_popup', id:'game_status_screen', style: 'font-size: 2em;'})
+      .text("Night has Fallen, You head back to camp and prepare for a new street in the morning")
+      .append($('<div/>', {class: 'scorebox', style: 'font-size: 0.4em;'}))
+      .append($('<div/>', {class: 'game_popup_button', id: 'game_status_button'}).text("Continue")
+        .click(function(e) {
+          that.scene.sendCommand( { instruction: 'end_day'}, function( response ) { 
+            that.scene.remote_state = response.state;
+            that.framework.popState();
+            that.framework.pushState(new GameState(that.scene));
+            updateStats(that, response.state);
+          });
+        })
+      )
+    );
+  }
+  extend(EndDayState, GameFramework.State);
+
+  EndDayState.prototype.destroy = function() {
+    $("#game_status_screen").remove();
+  }
+
+  function GameOverState(scene) {
+    GameFramework.State.call(this, scene);
+
+    var gui = $("#game_frame");
+    var that = this;
+    gui.append($('<div/>', {class: 'game_popup', id:'game_over_screen', style: 'font-size: 2em;'})
+      .text("You Died, its sad, but everyone else is dead, so oh well")
+      .append($('<div/>', {class: 'scorebox', style: 'font-size: 0.4em;'}))
+      .append($('<div/>', {class: 'game_popup_button', id: 'game_over_button'}).text("Continue")
+        .click(function(e) {
+          that.framework.popState();
+        })
+      )
+    );
+  }
+  extend(GameOverState, GameFramework.State);
+  
+  GameOverState.prototype.destroy = function() {
+    $("#game_over_screen").remove();
   }
 
   window.app = {

@@ -180,7 +180,6 @@ def engine_update(request):
             if g == None:
                 g = helper_new_game(request.user)
                 return JsonResponse({"command": "new_game", "status": "ok", "state": helper_get_gamestate(g)})
-
             return JsonResponse({"command": "load_game", "status": "ok", "state": helper_get_gamestate(g)})
 
         if update_event["instruction"] == "take_turn":  #take a turn
@@ -196,7 +195,6 @@ def engine_update(request):
             g.end_day()
             g.start_new_day()
             helper_save_game(request.user, g)
-            print(g)
             return JsonResponse({"command": "end_day", "status": "ok", "state": helper_get_gamestate(g)})
 
     return JsonResponse({"command": update_event, "status": "failed"})
