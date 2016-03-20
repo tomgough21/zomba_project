@@ -2,17 +2,19 @@
 {% load staticfiles %}
 {% block body_block %}
 {% if user.is_authenticated %}
+{% load avatar_tags %}
 <div class="row placeholders">
 			<div class="col-xs-6 col-sm-3 placeholder">
-              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
+              {% avatar user %}
               <h1><b>{{ user.username }}</b></h1>
-              <span class="text-muted">Joined: [Date]<br>Location: [Location]</br><li><a href="{% url 'auth_password_change' %}">Change password</a></li></span>
+              <span class="text-muted">Joined: [Date]<br>Location: [Location]</br><li><a href="{% url 'auth_password_change' %}">Change password</a></li><li><a href="{% url 'avatar_change' %}">Change your avatar</a></li></span>
             </div>
 			
             </div>
             <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
           <h1 class="page-header">{{ user.username }}'s Achievements</h1>
-
+			
+			
           <div class="row placeholders">
             <div class="col-xs-6 col-sm-3 placeholder">
               <img src="{% static 'images/achievements/mostkills.png'%}" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">

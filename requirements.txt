@@ -5,3 +5,4 @@ simplejson==3.8.2
 wheel==0.29.0
 fake-factory==0.5.3
 wsgiref==0.1.2
+django-avatar
