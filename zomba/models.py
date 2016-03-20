@@ -30,6 +30,8 @@ class Player(models.Model):
     most_days_survived = models.IntegerField(default = 0)
     most_kills = models.IntegerField(default = 0)
     most_people = models.IntegerField(default = 0)
+    total_days = models.IntegerField(default = 0)
+    total_kills = models.IntegerField(default = 0)
     #game object
     current_game = models.OneToOneField(InGame, null=True, blank=True)
     def __unicode__(self):
