@@ -24,6 +24,7 @@ def leaderboard(request):
     mostDays = Player.objects.order_by('-most_days_survived')[:20]
     mostKills = Player.objects.order_by('-most_kills')[:20]
     mostPartyMembers = Player.objects.order_by('-most_people')[:20]
+
     context_dict = {'mostDays':mostDays,'mostKills':mostKills,'mostPartyMembers':mostPartyMembers}
     return render(request, 'zomba/leaderboard.html',context_dict)
     
@@ -109,7 +110,7 @@ def helper_save_game(user, game):
     player = get_object_or_404(Player, user = user);
     if(not player.current_game):
         player.current_game = InGame.objects.create(
-            game_state = pickle.dumps(game.game_state),
+            game_state = pickle.dumps({"game_state": game.game_state, "time_left": game.time_left}),
             street_state = pickle.dumps(game.street),
             update_state = pickle.dumps(game.update_state),
             player_state = pickle.dumps(game.player_state),
@@ -118,7 +119,7 @@ def helper_save_game(user, game):
         player.current_game.player_state = pickle.dumps(game.player_state)
         player.current_game.update_state = pickle.dumps(game.update_state)
         player.current_game.street_state = pickle.dumps(game.street)
-        player.current_game.game_state = pickle.dumps(game.game_state)
+        player.current_game.game_state = pickle.dumps({"game_state": game.game_state, "time_left": game.time_left})
 
     player.current_game.save()
     player.save()
@@ -127,15 +128,41 @@ def helper_new_game(user):
     g = Engine.Game()
     g.start_new_day()
     helper_save_game(user, g)
+    return g
 
 def helper_get_game(user):
-    player = get_object_or_404(Player, user = user);
+    player = get_object_or_404(Player, user = user)
+    
+    if player.current_game == None:
+        return None
+
     g = Engine.Game()
     g.player_state = pickle.loads(player.current_game.player_state)
     g.update_state = pickle.loads(player.current_game.update_state)
     g.street = pickle.loads(player.current_game.street_state)
-    g.game_state = pickle.loads(player.current_game.game_state)
+    game_state = pickle.loads(player.current_game.game_state)
+    g.game_state = game_state["game_state"]
+    g._time_left = game_state["time_left"]
     return g
+
+def helper_get_gamestate(g):
+    house = g.street.get_current_house()
+    state = { "game_state" : g.game_state,
+              "time_left": g.time_left,
+
+              "player":{ "party": g.player_state.party,
+                         "ammo": g.player_state.ammo,
+                         "food": g.player_state.food ,
+                         "kills": g.player_state.kills,
+                         "days": g.player_state.days},
+              "street":{ "name": g.street.name,
+                         "num_of_houses": g.street.num_of_houses,
+                         "current_house": g.street.current_house},
+              "house":  { "num_of_rooms" : house.num_of_rooms,
+                           "current_room" : house.current_room}
+            }
+
+    return state
 
 @login_required
 def engine_update(request):
@@ -144,22 +171,25 @@ def engine_update(request):
         if "instruction" not in update_event:
             return JsonResponse({"command": "malformed", "status": "failed"})
 
-        if update_event["instruction"] == "new_game":   #create a new game and send the state
-            helper_new_game(request.user)
-            status = {}
-            return JsonResponse({"command": "new_game", "status": "ok"})
+        if update_event["instruction"] == "new_game":   #restart game
+            g = helper_new_game(request.user)
+            return JsonResponse({"command": "new_game", "status": "ok", "state": helper_get_gamestate(g) })
 
-        if update_event["instruction"] == "load_game":      #this would just send the whole game state (refresh)
+        if update_event["instruction"] == "load_game":      #either load or newgame and tell client which
             g = helper_get_game(request.user)
-            return JsonResponse({"command": "load_game", "status": "ok"})
+            if g == None:
+                g = helper_new_game(request.user)
+                return JsonResponse({"command": "new_game", "status": "ok", "state": helper_get_gamestate(g)})
+
+            return JsonResponse({"command": "load_game", "status": "ok", "state": helper_get_gamestate(g)})
 
         if update_event["instruction"] == "take_turn":  #take a turn
             g = helper_get_game(request.user)
             if(update_event["turn"] in g.turn_options()):
                 g.take_turn(update_event["turn"], int(update_event["data1"]))
                 helper_save_game(request.user, g)
-                return JsonResponse({"command": "take_turn", "status": "ok", "game_state": g.game_state})
-            return JsonResponse({"command": "take_turn", "status": "invalid turn"})
+                return JsonResponse({"command": "take_turn", "status": "ok", "state": helper_get_gamestate(g)})
+            return JsonResponse({"command": "take_turn", "status": "invalid turn", "state": helper_get_gamestate(g)})
 
     return JsonResponse({"command": update_event, "status": "failed"})
 

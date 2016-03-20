@@ -13,6 +13,10 @@ var GameFramework = (function () {
     }
 
     State.prototype.update = function(delta) {
+        if(this.scene.resources_loading === 0 && this.scene.onLoad !== undefined) {
+          this.scene.onLoad();
+          this.scene.onLoad = undefined;
+        }
         if(this.scene) {
             this.scene.update(delta);
         }
@@ -108,5 +112,6 @@ var GameFramework = (function () {
     var gameframework = {};
     gameframework.State = State;
     gameframework.Framework = Framework;
+
     return gameframework;
 })();

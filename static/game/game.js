@@ -1,44 +1,117 @@
 (function($) {
 
+  function getRandomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
   var extend = function(klass, base) {
     klass.prototype = Object.create(base.prototype);
     klass.prototype.constructor = klass;
+  }
+
+  function MenuState(scene) {
+    GameFramework.State.call(this, scene);
+    //Resource preloading
+    for(var i = 0; i < GameResources.tilesets.length; i++) {
+      scene.loadSprite(GameResources.tilesets[i].name, 1, 0, true);
+    }
+
+    this.scene.loadSprite('player', 96, 4, true, 32);
+    this.scene.loadSprite('zombie', 96, 4, true, 32);
+
+    this.scene.remote_state = {}
+    this.newgame = false;
+
+    var gui = $("#game_frame");
+    var that = this;
+    gui.append($('<div/>', {class: 'game_popup', id:'game_start_screen'})
+      .text("Zomba")
+      .append($('<div/>', {class: 'scorebox', style: 'font-size: 0.4em;'}))
+      .append($('<div/>', {class: 'game_popup_button', id: 'game_start_button'}).text("Loading...")
+        .click(function(e) {
+          if(that.scene.resources_loading === 0) {
+            that.framework.pushState(new GameState(that.scene));
+          }
+        }
+    )));
+
+    this.scene.onLoad = function() {
+      if(that.newgame == true) {
+        $("#game_start_button").text("New Game");
+      } else {
+        $("#game_start_button").text("Continue");
+        $("#game_start_screen").append($('<div/>', {class: 'game_popup_button', id: 'game_start_button'}).text("Restart")
+          .click(function() {
+            that.scene.sendCommand( { instruction: 'new_game'}, function( response ) {
+              that.scene.remote_state = response.state;
+              that.framework.pushState(new GameState(that.scene));
+            })
+          }));
+      }
+    }
+    this.scene.sendCommand( { instruction: 'load_game'}, function( response ) {
+      that.scene.remote_state = response.state;
+      if(response.command === "new_game"){
+        that.newgame = true;
+      }
+    } );
+
+  }
+  extend(MenuState, GameFramework.State);
+
+  MenuState.prototype.focus = function() {
+    $("#game_start_screen").show();
+  }
+
+  MenuState.prototype.blur = function() {
+    $("#game_start_screen").hide();
+  }
+
+  function updateStats(state){
+    $('#game_score').text("Ammo: "+ state.player.ammo + " Food: " + state.player.food );
+    $('#time_left_box').text('Daylight left: ' + state.time_left + "");
+    $('#game_lives').text("Party: " + state.player.party );
   }
 
   function GameState(scene) {
     GameFramework.State.call(this, scene);
 
     movemode = 0;
-    jQuery('<div/>', {
+    $('<div/>', {
       id: 'street_frame'
     }).appendTo('#game_frame');
-    jQuery('<div/>', {
+    $('<div/>', {
       id: 'game_terrain',
       class: 'game_terrain'
     }).appendTo('#street_frame');
 
-    var gui = jQuery('<div/>', {
+    var gui = $('<div/>', {
       id: 'game_top_gui'
     }).appendTo('#game_frame');
 
-    jQuery('<div/>', {
+    $('<div/>', {
       id: 'game_score'
-    }).appendTo('#game_top_gui').html('Ammo: 20 &nbsp;&nbsp; Food: 3');
+    }).appendTo('#game_top_gui').text("Ammo: "+ this.scene.remote_state.player.ammo +" Food: " + this.scene.remote_state.player.food );
 
-    jQuery('<div/>', {
+    $('<div/>', {
       id: 'game_active_word'
-    }).appendTo('#game_top_gui').html('Score: 2000');
+    }).appendTo('#game_top_gui')
 
-    jQuery('<div/>', {
+    $("<div/>", {id:"time_left_box"}).text('Daylight left: ' + this.scene.remote_state.time_left).appendTo("#game_active_word");
+
+    var that = this;
+    $('<div />', { id: "wait_button", class: "game_button"}).appendTo('#game_active_word').text("Wait?").click( function(e) {
+      e.stopPropagation();
+      that.scene.sendCommand( { instruction: 'take_turn', turn: 'WAIT', data1: that.active_terrain}, function( response ) {
+        that.scene.remote_state = response.state;
+        updateStats(response.state);
+      } );
+    });
+
+
+    $('<div/>', {
       id: 'game_lives'
-    }).appendTo('#game_top_gui').html('Party: 1');
-
-    for(var i = 0; i < GameResources.tilesets.length; i++) {
-      this.scene.loadSprite(GameResources.tilesets[i].name, 1, 0, true);
-    }
-
-    this.scene.loadSprite('player', 96, 4, true, 32);
-    this.scene.loadSprite('zombie', 96, 4, true, 32);
+    }).appendTo('#game_top_gui').text("Party: " + this.scene.remote_state.player.party );
 
     this.terrain = undefined;
     this.player = undefined;
@@ -46,23 +119,24 @@
     this.y = 0;
     this.moveDelta = 0;
     this.movemode = 0;
+    this.world = []
 
-    this.world = [1,1,1,1,1,1,1,1] // setup street array
+    for( var i = 0; i < this.scene.remote_state.street.num_of_houses; i++) {
+      this.world.push(1)
+    }
+
     this.world_width = 0;
     this.active_terrain = undefined;
     this.terrain = []
-
-    var that = this;
     
     this.scene.onLoad = function() {
-      for(var i = 0; i < 8; i++) {
+      for(var i = 0; i < that.world.length; i++) {
         var level = that.world[i];
         that.terrain.push(new SpriteEngine.Terrain(that.scene, "#game_terrain", GameResources.levels[level], that.world_width, 0 ));
         that.world_width += (GameResources.levels[level].width * 64); //64 is the tilewidth
       }
       that.player = new SpriteEngine.GameObject(that.scene, 'player', '#street_frame').setGroup('street').setPosition(450,500).setScale(2.0);
       that.player.spritestate.pause();
-
       that.updateTerrain();
     }
       
@@ -131,6 +205,12 @@
 
   GameState.prototype.update = function(delta) {
     GameFramework.State.prototype.update.call(this, delta);
+
+    //states out of sync
+    if(this.scene.remote_state.game_state != "STREET") {
+      this.framework.pushState(new HouseState(this.scene, this.scene.remote_state.house.num_of_rooms));
+    }
+
     if(this.player !== undefined && this.moveDelta !== undefined) {
       var vec = {x : 0, y : 0};
       var moveMagnitude = Math.sqrt(this.moveDelta.x * this.moveDelta.x + this.moveDelta.y * this.moveDelta.y);
@@ -156,10 +236,18 @@
         var door_offsety = this.terrain[this.active_terrain].y;
 
         if(this.playerInRect(door.x1 - door_offsetx, door.x2 - door_offsetx, door.y1 + door_offsety, door.y2 + door_offsety)) {
-          this.framework.pushState(new HouseState(this.scene));
+          var that = this;
+          this.scene.sendCommand( { instruction: 'take_turn', turn: 'MOVE', data1: this.active_terrain}, function( response ) { //choice to enter seems redundant
+            that.scene.remote_state = response.state;
+            that.scene.sendCommand( { instruction: 'take_turn', turn: 'ENTER', data1: that.active_terrain}, function( response ) {
+              that.scene.remote_state = response.state;
+              that.framework.pushState(new HouseState(that.scene, that.scene.remote_state.house.num_of_rooms));
+              updateStats(response.state);
+            } );
+          } );
         }
-
         this.moveDelta = undefined;
+
       }else {
         if( Math.abs(vec.x) > Math.abs(vec.y) ) {
           if(vec.x > 0) {
@@ -192,8 +280,16 @@
         this.x = (-(this.world_width - this.terrain[this.terrain.length-1].width));
       }
 
+      var new_y = this.player.position.y + vec.y;
+      if(new_y < 340) {
+        new_y = 340;
+      }
+      if(new_y > 700) {
+        new_y = 700;
+      }
+
       this.terrain[0].setPosition(this.x,0);
-      this.player.setPosition(this.player.position.x, this.player.position.y + vec.y);
+      this.player.setPosition(this.player.position.x, new_y);
       this.updateTerrain();
     }
 
@@ -211,14 +307,13 @@
   }
 
   GameState.prototype.click = function(e) {
+    if(this.player == undefined) {
+      return;
+    }
     this.moveDelta = { x : e.relative.x - this.player.position.x, y : e.relative.y - this.player.position.y};
   }
 
-  function getRandomInt(min, max) {
-      return Math.floor(Math.random() * (max - min + 1)) + min;
-  }
-
-  function HouseState(scene) {
+  function HouseState(scene, rooms) {
     GameFramework.State.call(this, scene);
     jQuery('<div/>', {
       id: 'house_frame'
@@ -235,9 +330,19 @@
     this.y = 0;
     this.moveDelta = 0;
     this.movemode = 0;
+    rooms = rooms - 2;
+    var middle = Math.round(rooms / 2);
+    this.world  = [];
+    this.world.push(4);
+    for(var i = 0; i < rooms; i ++) {
+      if(i!=(middle-1)) {
+        this.world.push(3);
+      } else {
+        this.world.push(2);
+      }
+    }
+    this.world.push(5);
 
-    //this.world = [2]
-    this.world = [4,3,2,3,5] // setup coridor array
     this.world_width = 0;
     this.active_terrain = undefined;
     this.terrain = []
@@ -251,6 +356,7 @@
         that.world_width += (GameResources.levels[level].width * 64); //64 is the tilewidth
         that.terrain[i].draw();
       }
+      console.log("hi")
       that.player = new SpriteEngine.GameObject(that.scene, 'player', '#house_frame').setGroup('active_house').setPosition(450,500).setScale(2.0);
 
       that.updateTerrain();
@@ -283,7 +389,6 @@
     if(player_chunk === this.active_terrain) {
       return;
     }
-    console.log("new chunk " + player_chunk );
     this.active_terrain = player_chunk;
   }
 
@@ -297,6 +402,11 @@
 
   HouseState.prototype.update = function(delta) {
     GameFramework.State.prototype.update.call(this, delta);
+
+    if(this.scene.remote_state.game_state != "HOUSE") {
+      this.framework.pushState(new RoomState(this.scene));
+    }
+
     if(this.player !== undefined && this.moveDelta !== undefined) {
 
       var vec = {x : 0, y : 0};
@@ -324,7 +434,12 @@
           var door_offsety = this.terrain[this.active_terrain].y;
 
           if(this.playerInRect(door.x1 - door_offsetx, door.x2 - door_offsetx, door.y1 + door_offsety, door.y2 + door_offsety)) {
-            this.framework.pushState(new RoomState(this.scene));
+            var that = this;
+            this.scene.sendCommand( { instruction: 'take_turn', turn: 'SEARCH', data1: this.active_terrain}, function( response ) { //choice to enter seems redundant
+              that.scene.remote_state = response.state;
+              that.framework.pushState(new RoomState(that.scene));
+              updateStats(response.state);
+            });
           }
         }
 
@@ -334,7 +449,12 @@
           var door_offsety = this.terrain[this.active_terrain].y;
 
           if(this.playerInRect(door.x1 - door_offsetx, door.x2 - door_offsetx, door.y1 + door_offsety, door.y2 + door_offsety)) {
-            this.framework.popState();
+            var that = this;
+            this.scene.sendCommand( { instruction: 'take_turn', turn: 'EXIT', data1: this.active_terrain}, function( response ) { //choice to enter seems redundant
+              that.scene.remote_state = response.state;
+              that.framework.popState();
+              updateStats(response.state);
+            });
           }
 
         }
@@ -363,18 +483,18 @@
       }
 
       
-      //stop walking backwards of screen
       this.x -= vec.x
-      /*if(this.x > 0) {
-        this.x = 0;
+
+      var new_y = this.player.position.y + vec.y;
+      if(new_y < 404) {
+        new_y = 404;
       }
-      if(this.x < (-(this.world_width - this.terrain[this.terrain.length-1].width))) {
-        this.x = (-(this.world_width - this.terrain[this.terrain.length-1].width));
+      if(new_y > 600) {
+        new_y = 600;
       }
-      */
 
       this.terrain[0].setPosition(this.x, 0);
-      this.player.setPosition(this.player.position.x, this.player.position.y + vec.y);
+      this.player.setPosition(this.player.position.x, new_y);
       this.updateTerrain();
     }
     
@@ -395,7 +515,57 @@
     this.moveDelta = { x : e.relative.x - this.player.position.x, y : e.relative.y - this.player.position.y};
   }
 
-    function RoomState(scene) {
+  function ZombieState(scene) {
+    GameFramework.State.call(this, scene);
+    //Resource preloading
+    for(var i = 0; i < GameResources.tilesets.length; i++) {
+      scene.loadSprite(GameResources.tilesets[i].name, 1, 0, true);
+    }
+
+    this.scene.loadSprite('player', 96, 4, true, 32);
+    this.scene.loadSprite('zombie', 96, 4, true, 32);
+
+    this.scene.remote_state = {}
+    this.newgame = false;
+
+    var gui = $("#game_frame");
+    var that = this;
+    gui.append($('<div/>', {class: 'game_popup', id:'game_zombie_screen'})
+      .text("Zombies .. AAAAH!")
+      .append($('<div/>', {class: 'scorebox', style: 'font-size: 0.4em;'}))
+      .append($('<div/>', {class: 'game_popup_button', id: 'game_attack_button'}).text("Attack!")
+        .click(function(e) {
+          that.scene.sendCommand( { instruction: 'take_turn', turn: 'FIGHT', data1: 0}, function( response ) { 
+            that.scene.remote_state = response.state;
+            that.framework.popState(); //close popup
+            updateStats(response.state);
+          });
+        })
+      ).append($('<div/>', {class: 'game_popup_button', id: 'game_flee_button'}).text("Flee!")
+        .click(function(e) {
+          that.scene.sendCommand( { instruction: 'take_turn', turn: 'RUN', data1: 0}, function( response ) { 
+            that.scene.remote_state = response.state;
+            that.framework.popState(); //close popup
+            that.framework.popState(); //leave room
+            that.framework.popState(); //leave house
+            updateStats(response.state);
+          });
+
+        })
+      )
+    );
+
+    this.scene.onLoad = function() {
+
+    }
+  }
+  extend(ZombieState, GameFramework.State);
+
+  ZombieState.prototype.destroy = function() {
+    $("#game_zombie_screen").remove();
+  }
+
+  function RoomState(scene) {
     GameFramework.State.call(this, scene);
     jQuery('<div/>', {
       id: 'room_frame'
@@ -429,7 +599,6 @@
         that.terrain[i].draw();
       }
       that.player = new SpriteEngine.GameObject(that.scene, 'player', '#room_frame').setGroup('active_room').setPosition(450,500).setScale(2.0);
-
       that.updateTerrain();
     }
   }
@@ -473,6 +642,11 @@
 
   RoomState.prototype.update = function(delta) {
     GameFramework.State.prototype.update.call(this, delta);
+
+     if(this.scene.remote_state.game_state == "ZOMBIE") {
+       this.framework.pushState(new ZombieState(this.scene));
+     }
+
     if(this.player !== undefined && this.moveDelta !== undefined) {
 
       var vec = {x : 0, y : 0};
@@ -556,7 +730,7 @@
     init: function() {
       this.scene = new SpriteEngine.Scene("#game_frame");
       this.framework = new GameFramework.Framework("body");
-      this.framework.pushState(new GameState(this.scene));
+      this.framework.pushState(new MenuState(this.scene));
       this.framework.start();
     },
   }

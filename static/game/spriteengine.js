@@ -17,6 +17,42 @@ var SpriteEngine = (function () {
     this.resources_loading = 0;
   };
 
+  Scene.prototype.getCookie = function(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+  Scene.prototype.sendCommand = function(command, func) {
+    var that = this;
+    jQuery.ajax({
+      url: '/engine_update/',
+      type: 'post',
+      data: JSON.stringify(command),
+      headers: {
+          "X-CSRFToken": this.getCookie('csrftoken'),
+      },
+      dataType: 'json',
+      success: function (data) {
+          that.resources_loading --;
+          console.log(data);
+          if(func !== undefined){
+            func(data);
+          }
+      }
+    });
+    this.resources_loading ++;
+  }
+
   Scene.prototype.loadSound = function(name, file) {
     if (!(name in this.audio.sounds)) {
       var sound = new Audio(file);
@@ -133,11 +169,6 @@ var SpriteEngine = (function () {
   }
 
   Scene.prototype.update = function(delta) {
-    if(this.resources_loading === 0 && this.onLoad !== undefined) {
-      this.onLoad();
-      this.onLoad = undefined;
-    }
-
     if(this.objects.kill !== undefined) {
       while (this.objects.kill.length > 0) {
         this.removeGameObject(this.objects.kill.shift());
