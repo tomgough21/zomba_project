@@ -24,7 +24,6 @@ def leaderboard(request):
     mostDays = Player.objects.order_by('-most_days_survived')[:20]
     mostKills = Player.objects.order_by('-most_kills')[:20]
     mostPartyMembers = Player.objects.order_by('-most_people')[:20]
-
     context_dict = {'mostDays':mostDays,'mostKills':mostKills,'mostPartyMembers':mostPartyMembers}
     return render(request, 'zomba/leaderboard.html',context_dict)
     
@@ -45,13 +44,10 @@ def create_player(request):
 def profile(request, username):
     context_dict={}
     try:
-        user=User.objects.get(username=user_name)
-        context_dict['username']=user
-    except:
-        pass
-    try:
-        profile = UserProfile.objects.get(user=user)
-        context_dict['profile']=profile
+        user = User.objects.get(username = username)
+        context_dict['profile_user'] = user
+        player = Player.objects.get(user = user)
+        context_dict['player'] = player
     except:
         pass
     return render(request, 'zomba/profile.html',context_dict)
@@ -161,6 +157,10 @@ def helper_get_gamestate(g):
               "house":  { "num_of_rooms" : house.num_of_rooms,
                            "current_room" : house.current_room}
             }
+    if g.is_day_over():
+        state["game_state"] = "DAY_OVER"
+    if g.is_game_over():
+        state["game_state"] = "GAME_OVER"
 
     return state
 
@@ -190,6 +190,14 @@ def engine_update(request):
                 helper_save_game(request.user, g)
                 return JsonResponse({"command": "take_turn", "status": "ok", "state": helper_get_gamestate(g)})
             return JsonResponse({"command": "take_turn", "status": "invalid turn", "state": helper_get_gamestate(g)})
+
+        if update_event["instruction"] == "end_day":  #end the day
+            g = helper_get_game(request.user)
+            g.end_day()
+            g.start_new_day()
+            helper_save_game(request.user, g)
+            print(g)
+            return JsonResponse({"command": "end_day", "status": "ok", "state": helper_get_gamestate(g)})
 
     return JsonResponse({"command": update_event, "status": "failed"})
 

@@ -5,14 +5,19 @@
 {% load avatar_tags %}
 <div class="row placeholders">
 			<div class="col-xs-6 col-sm-3 placeholder">
-              {% avatar user %}
-              <h1><b>{{ user.username }}</b></h1>
-              <span class="text-muted">Joined: [Date]<br>Location: [Location]</br><li><a href="{% url 'auth_password_change' %}">Change password</a></li><li><a href="{% url 'avatar_change' %}">Change your avatar</a></li></span>
+              {% avatar profile_user %}
+              <h1><b>{{ profile_user.username }}</b></h1>
+              <span class="text-muted">Joined: [Date]<br>Location: [Location]</br>
+              {%if user == profile_user %}
+              <li><a href="{% url 'auth_password_change' %}">Change password</a></li>
+              <li><a href="{% url 'avatar_change' %}">Change your avatar</a></li></span>
+              {% endif %}
             </div>
 			
             </div>
             <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-          <h1 class="page-header">{{ user.username }}'s Achievements</h1>
+          <h1 class="page-header">{{ profile_user.username }}'s Achievements</h1>
+          Most Kills {{player.most_kills}}
 			
 			
           <div class="row placeholders">
