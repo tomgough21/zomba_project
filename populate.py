@@ -32,21 +32,21 @@ def populate():
     add_user('lando','lando@test.com','lando',0,0,0,0,0)
     add_user('trump','trump@test.com','trump',0,0,0,0,0)
 
-    gold_days = add_badge('Days-15','survive for 15 days','gold_days',15,3,'badges/gold_days0000.jpg')
-    silver_days = add_badge('Days-10','survive for 10 days','silver_days',10,2,'badges/silver_days0000.jpg')
-    bronze_days = add_badge('Days-5','survive for 5 days','bronze_days',5,1,'badges/bronze_days0000.jpg')
+    gold_days = add_badge('Survivor Gold','survive for 15 days','days',15,3,'images/badges/gold_days0000.jpg')
+    silver_days = add_badge('Survivor Silver','survive for 10 days','days',10,2,'images/badges/silver_days0000.jpg')
+    bronze_days = add_badge('Survivor Bronze','survive for 5 days','days',5,1,'images/badges/bronze_days0000.jpg')
 	
-    gold_party = add_badge('Party-40','40 party members','gold_party',40,3,'badges/gold_party0000.jpg')
-    silver_party = add_badge('Party-20','20 party members','silver_party',20,2,'badges/silver_party0000.jpg')
-    bronze_party = add_badge('Party-10','10 party members','bronze_party',10,1,'badges/bronze_party0000.jpg')
+    gold_party = add_badge('Party Gold','40 party members','party',40,3,'images/badges/gold_party0000.jpg')
+    silver_party = add_badge('Party Silver','20 party members','party',20,2,'images/badges/silver_party0000.jpg')
+    bronze_party = add_badge('Party Bronze','10 party members','party',10,1,'images/badges/bronze_party0000.jpg')
 	
-    gold_games = add_badge('Stamina-20','play 20 games','gold_games',20,3,'badges/gold_games0000.jpg')
-    silver_games = add_badge('Stamina-10','play 10 games','silver_games',10,2,'badges/silver_games0000.jpg')
-    bronze_games = add_badge('Stamina-5','play 5 games','bronze_games',5,1,'badges/bronze_games0000.jpg')
+    gold_games = add_badge('Stamina Gold','play 20 games','games',20,3,'images/badges/gold_games0000.jpg')
+    silver_games = add_badge('Stamina Silver','play 10 games','games',10,2,'images/badges/silver_games0000.jpg')
+    bronze_games = add_badge('Stamina Bronze','play 5 games','games',5,1,'images/badges/bronze_games0000.jpg')
 	
-    gold_kills = add_badge('Kills-50','kill 50 zombies','gold_kills',50,3,'badges/gold_kills0000.jpg')
-    silver_kills = add_badge('Kills-20','kill 20 zombies','silver_kills',20,2,'badges/silver_kills0000.jpg')
-    bronze_kills = add_badge('Kills-10','kill 10 zombies','bronze_kills',10,1,'badges/bronze_kills0000.jpg')
+    gold_kills = add_badge('Kills Gold','kill 50 zombies','kills',50,3,'images/badges/gold_kills0000.jpg')
+    silver_kills = add_badge('Kills Silver','kill 20 zombies','kills',20,2,'images/badges/silver_kills0000.jpg')
+    bronze_kills = add_badge('Kills Bronze','kill 10 zombies','kills',10,1,'images/badges/bronze_kills0000.jpg')
     #add your test users here
 
 def add_user(username, email, password,mostKills,mostDays,mostPartyMembers, totalDays, totalKills):
