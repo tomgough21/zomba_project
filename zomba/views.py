@@ -102,6 +102,27 @@ def user_logout(request):
 	return HttpResponseRedirect('/zomba/')
 
 #hacked together for testing
+def helper_update_stats(player, game):
+    if(not player or not game):
+        return
+
+    if player.most_kills < game.player_state.kills:
+        player.most_kills = game.player_state.kills
+
+    if player.most_people < game.player_state.party:
+        player.most_people = game.player_state.party
+
+    if player.most_days_survived < game.player_state.days:
+        player.most_days_survived = game.player_state.days
+
+    if game.is_game_over(): #you dont get the stat boost unless you die
+        player.games_played += 1
+        player.total_days += game.player_state.days
+        player.total_kills += game.player_state.kills
+
+def helper_new_acheivments(player, game):
+    return []
+
 def helper_save_game(user, game):
     player = get_object_or_404(Player, user = user);
     if(not player.current_game):
@@ -117,7 +138,9 @@ def helper_save_game(user, game):
         player.current_game.street_state = pickle.dumps(game.street)
         player.current_game.game_state = pickle.dumps({"game_state": game.game_state, "time_left": game.time_left})
 
+
     player.current_game.save()
+    helper_update_stats(player, game)
     player.save()
 
 def helper_new_game(user):
@@ -128,7 +151,7 @@ def helper_new_game(user):
 
 def helper_get_game(user):
     player = get_object_or_404(Player, user = user)
-    
+
     if player.current_game == None:
         return None
 
@@ -143,19 +166,24 @@ def helper_get_game(user):
 
 def helper_get_gamestate(g):
     house = g.street.get_current_house()
+    room  = house.room_list[house.current_room];
     state = { "game_state" : g.game_state,
               "time_left": g.time_left,
 
-              "player":{ "party": g.player_state.party,
-                         "ammo": g.player_state.ammo,
-                         "food": g.player_state.food ,
-                         "kills": g.player_state.kills,
-                         "days": g.player_state.days},
-              "street":{ "name": g.street.name,
-                         "num_of_houses": g.street.num_of_houses,
-                         "current_house": g.street.current_house},
+              "player": { "party": g.player_state.party,
+                          "ammo" : g.player_state.ammo,
+                          "food" : g.player_state.food ,
+                          "kills": g.player_state.kills,
+                          "days" : g.player_state.days},
+              "street": { "name" : g.street.name,
+                          "num_of_houses": g.street.num_of_houses,
+                          "current_house": g.street.current_house },
               "house":  { "num_of_rooms" : house.num_of_rooms,
-                           "current_room" : house.current_room}
+                          "current_room" : house.current_room   },
+              "room":   { "zombies": room.zombies, 
+                          "people" : room.people,
+                          "food"   : room.food,
+                          "ammo"   : room.ammo },
             }
     if g.is_day_over():
         state["game_state"] = "DAY_OVER"
@@ -185,6 +213,8 @@ def engine_update(request):
         if update_event["instruction"] == "take_turn":  #take a turn
             g = helper_get_game(request.user)
             if(update_event["turn"] in g.turn_options()):
+                if update_event["turn"] == "MOVE" and int(update_event["data1"]) == g.street.current_house: #move to current house, noop
+                    return JsonResponse({"command": "take_turn", "status": "ok", "state": helper_get_gamestate(g)})
                 g.take_turn(update_event["turn"], int(update_event["data1"]))
                 helper_save_game(request.user, g)
                 return JsonResponse({"command": "take_turn", "status": "ok", "state": helper_get_gamestate(g)})
@@ -200,13 +230,6 @@ def engine_update(request):
     return JsonResponse({"command": update_event, "status": "failed"})
 
 @login_required
-def engine_debug(request):
-    if request.user.is_superuser:
-        return render(request,'zomba/engine_debug.html')
-    else:
-        return HttpResponseRedirect('/zomba/')
-
-@login_required
 def engine_editor(request):
     if request.user.is_superuser:
         return render(request,'zomba/engine_editor.html')
@@ -214,8 +237,5 @@ def engine_editor(request):
         return HttpResponseRedirect('/zomba/')
 
 @login_required
-def engine_test(request):
-    if request.user.is_superuser:
-        return render(request,'zomba/engine_test.html')
-    else:
-        return HttpResponseRedirect('/zomba/')
+def game(request):
+    return render(request,'zomba/game.html')

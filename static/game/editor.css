@@ -1,3 +1,16 @@
+#game_frame {
+  position: relative;
+  width: 1024px;
+  height: 768px;
+  overflow: hidden;
+  margin: 0px;
+  margin-bottom: 50px;
+  border: 1px solid rgb(0,0,0);
+  image-rendering: -moz-crisp-edges;         /* Firefox */
+  image-rendering:   -o-crisp-edges;         /* Opera */
+  image-rendering: pixelated;                /* Chrome */
+}
+
 #game_top_gui {
   position: absolute;
   width: 100%;

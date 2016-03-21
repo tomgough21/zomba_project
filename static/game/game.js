@@ -71,6 +71,7 @@
     $('#game_score').text("Ammo: "+ state.player.ammo + " Food: " + state.player.food );
     $('#time_left_box').text('Daylight left: ' + state.time_left + "");
     $('#game_lives').text("Party: " + state.player.party );
+    $('#day_count_box').text("Day: " + state.player.days)
 
     if(state.game_state == "DAY_OVER" || state.game_state == "GAME_OVER") {
       while(that.framework.states.length > 2) { //remove all states back to required level
@@ -110,6 +111,7 @@
     }).appendTo('#game_top_gui')
 
     $("<div/>", {id:"time_left_box"}).text('Daylight left: ' + this.scene.remote_state.time_left).appendTo("#game_active_word");
+    $("<div/>", {id:"day_count_box"}).text('Day: ' + this.scene.remote_state.player.days).appendTo("#game_active_word");  
 
     var that = this;
     $('<div />', { id: "wait_button", class: "game_button"}).appendTo('#game_active_word').text("Wait?").click( function(e) {
@@ -564,13 +566,21 @@
         that.terrain[i].draw();
       }
       that.player = new SpriteEngine.GameObject(that.scene, 'player', '#room_frame').setGroup('active_room').setPosition(450,500).setScale(2.0);
+      
+      for(var i = 0; i < that.scene.remote_state.room.zombies; i++) {
+        new SpriteEngine.GameObject(that.scene, 'zombie', '#room_frame').setGroup('active_room_zombies').setPosition(getRandomInt(95,880),getRandomInt(136,480)).setScale(2.0).setState(getRandomInt(0,16));
+      }
+      for(var i = 0; i < that.scene.remote_state.room.people; i++) {
+        new SpriteEngine.GameObject(that.scene, 'player', '#room_frame').setGroup('active_room_zombies').setPosition(getRandomInt(95,880),getRandomInt(136,480)).setScale(2.0).setState(getRandomInt(0,16));
+      }
+
       that.updateTerrain();
     }
   }
   extend(RoomState, GameFramework.State);
 
   RoomState.prototype.playerInRect = function(x1, x2, y1, y2) {
-    var x = this.x;
+    var x = this.player.position.x;
     var y = this.player.position.y;
     if ((x1 <= x) && (x <= x2) && (y1 <= y) && (y <= y2)) {
      return true;
@@ -676,11 +686,24 @@
         this.moveDelta.x -= vec.x;
         this.moveDelta.y -= vec.y;
       }
+      this.player.position.x += vec.x;
+      this.player.position.y += vec.y;
 
-      this.x -= vec.x
+      if(this.player.position.x > 944){
+        this.player.position.x = 944;
+      }
+      if(this.player.position.x < 60){
+        this.player.position.x = 60;
+      }
+      if(this.player.position.y > 590){
+        this.player.position.y = 590;
+      }
+      if(this.player.position.y < 150) {
+        this.player.position.y = 150;
+      }
 
       this.terrain[0].setPosition(this.x, 0);
-      this.player.setPosition(this.player.position.x, this.player.position.y + vec.y);
+      this.player.setPosition(this.player.position.x,this.player.position.y);
       this.updateTerrain();
     }
     

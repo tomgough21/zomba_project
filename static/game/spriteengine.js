@@ -430,6 +430,10 @@ var SpriteEngine = (function () {
   GameObject.prototype.refreshDomPosition = function() {
     this.dom_obj.css('left', (this.position.x - ((this.spritestate.sprite.spritesheet.tile_width * this.scale.x) / 2)) + 'px');
     this.dom_obj.css('top', (this.position.y - ((this.spritestate.sprite.spritesheet.tile_height * this.scale.y) / 2)) + 'px');
+    if(this.layer != undefined) {
+      this.dom_obj.css('zIndex', ''+ this.layer);
+    }
+
     this.position.dirty = false;
   };
 
@@ -518,8 +522,13 @@ var SpriteEngine = (function () {
     }
 
     for(var k = 0; k < this.data.layers; k++) {
+      var style = "";
+      if(k >= this.data.layers -2) {
+        style = "z-index:3000;";
+      }
       var layer = $('<div/>', {
-        class: 'game_terrain_layer'
+        class: 'game_terrain_layer',
+        style: style,
       }).appendTo(this.container);
       this.layers.push(layer);
 
@@ -532,6 +541,7 @@ var SpriteEngine = (function () {
           var tileset_name = GameResources.tilesets[this.data.tiles[k][(j*this.data.width)+i][0]].name;
           var frame_id = this.data.tiles[k][(j*this.data.width)+i][1];
           var tile = new SpriteEngine.GameObject(this.scene, tileset_name, column).setGroup(this.group).setFrame(frame_id).setScale(2.0);
+
         }
 
       }

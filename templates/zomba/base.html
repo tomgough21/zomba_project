@@ -21,6 +21,9 @@
 
     <!-- finaly override with our custom css -->
     <link href="{% static 'css/zomba.css'%}" rel="stylesheet">
+    <!-- Game CSS -->
+    <link rel="stylesheet" type="text/css" href="{% static 'game/style.css'%}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'game/resources.css'%}" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
   </head>
   <body>
@@ -50,6 +53,7 @@
                   <li class="pull-right"><a href="{% url 'auth_login' %}">Login</a></li>
                   <li class="pull-right"><a href="{% url 'registration_register' %}">Register</a></li>
                 {% endif %}
+                <li class="pull-left"><a href="{% url 'game'  %}">Play Zomba!</a></li>
                 <li class="pull-right"><a href="{% url 'leaderboard' %}">Leaderboard</a></li>
                 <li class="pull-right"><a href="{% url 'gallery' %}">Gallery</a></li>
                 <li class="pull-right"><a href="{% url 'about' %}">About</a></li>

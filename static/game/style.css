@@ -7,12 +7,13 @@ body {
   width: 1024px;
   height: 768px;
   overflow: hidden;
-  margin: 0;
-  padding: 0;
+  margin: auto;
+  margin-bottom: 50px;
   border: 1px solid rgb(0,0,0);
   image-rendering: -moz-crisp-edges;         /* Firefox */
   image-rendering:   -o-crisp-edges;         /* Opera */
   image-rendering: pixelated;                /* Chrome */
+  background-color: #60534b;
 }
 
 .game_terrain {
@@ -34,9 +35,9 @@ body {
 #game_top_gui {
   position: absolute;
   width: 100%;
-  height: 30px;
-  z-index: 3000;
-  padding-top: 20px;
+  height: 40px;
+  z-index: 5000;
+  padding-top: 10px;
   background-color: rgba(0,0,0,0.5);
   color: rgb(255,255,255);
 }
