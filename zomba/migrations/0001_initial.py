@@ -59,6 +59,8 @@ class Migration(migrations.Migration):
                 ('most_days_survived', models.IntegerField(default=0)),
                 ('most_kills', models.IntegerField(default=0)),
                 ('most_people', models.IntegerField(default=0)),
+                ('total_days', models.FloatField(default=0)),
+                ('total_kills', models.IntegerField(default=0)),
                 ('current_game', models.OneToOneField(null=True, blank=True, to='zomba.InGame')),
                 ('user', models.OneToOneField(to=settings.AUTH_USER_MODEL)),
             ],

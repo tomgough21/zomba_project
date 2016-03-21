@@ -43,8 +43,10 @@
         $("#game_start_screen").append($('<div/>', {class: 'game_popup_button', id: 'game_start_button'}).text("Restart")
           .click(function() {
             that.scene.sendCommand( { instruction: 'new_game'}, function( response ) {
-              that.scene.remote_state = response.state;
-              that.framework.pushState(new GameState(that.scene));
+              if(that.scene.resources_loading === 0) {
+                that.scene.remote_state = response.state;
+                that.framework.pushState(new GameState(that.scene));
+              }
             })
           }));
       }
@@ -293,8 +295,8 @@
         this.x = 0;
       }
 
-      if(this.x < (-(this.world_width - this.terrain[this.terrain.length-1].width))) {
-        this.x = (-(this.world_width - this.terrain[this.terrain.length-1].width));
+      if(this.x < (-(this.world_width - 450))) {
+        this.x = (-(this.world_width - 450));
       }
 
       var new_y = this.player.position.y + vec.y;
@@ -724,22 +726,25 @@
       .append($('<div/>', {class: 'scorebox', style: 'font-size: 0.4em;'}))
       .append($('<div/>', {class: 'game_popup_button', id: 'game_attack_button'}).text("Attack!")
         .click(function(e) {
-          that.scene.sendCommand( { instruction: 'take_turn', turn: 'FIGHT', data1: 0}, function( response ) { 
-            that.scene.remote_state = response.state;
-            that.framework.popState(); //close popup
-            updateStats(that, response.state);
-          });
+          if(that.scene.resources_loading === 0) {
+            that.scene.sendCommand( { instruction: 'take_turn', turn: 'FIGHT', data1: 0}, function( response ) { 
+              that.scene.remote_state = response.state;
+              that.framework.popState(); //close popup
+              updateStats(that, response.state);
+            });
+          }
         })
       ).append($('<div/>', {class: 'game_popup_button', id: 'game_flee_button'}).text("Flee!")
         .click(function(e) {
-          that.scene.sendCommand( { instruction: 'take_turn', turn: 'RUN', data1: 0}, function( response ) { 
-            that.scene.remote_state = response.state;
-            that.framework.popState(); //close popup
-            that.framework.popState(); //leave room
-            that.framework.popState(); //leave house
-            updateStats(that, response.state);
-          });
-
+          if(that.scene.resources_loading === 0) {
+            that.scene.sendCommand( { instruction: 'take_turn', turn: 'RUN', data1: 0}, function( response ) { 
+              that.scene.remote_state = response.state;
+              that.framework.popState(); //close popup
+              that.framework.popState(); //leave room
+              that.framework.popState(); //leave house
+              updateStats(that, response.state);
+            });
+          }
         })
       )
     );
