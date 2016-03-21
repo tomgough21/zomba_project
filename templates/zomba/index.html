@@ -33,7 +33,7 @@
             
               <audio id="audio" src="{% static 'sounds/Zombie_45.mp3'%}" ></audio>
 
-              <p><a class="btn btn-lg btn-primary" href="#startgame"value="play" onclick="play()" role="button">Start game</a></p>
+              <p><a class="btn btn-lg btn-primary" href="{% url 'game'  %}"value="play" onclick="play()" role="button">Start game</a></p>
               {% else %}
               <h1>Start your adventure today!</h1>
               <p>You find yourself in a zombie apocalypse. Explore the streets, find survivors and try your best to live through the nights.</p>
@@ -60,7 +60,7 @@
             <div class="carousel-caption">
               <h1>Screenshots</h1>
               <p>View ingame footage</p>
-              <p><a class="btn btn-lg btn-primary" href="#" role="button">Browse gallery</a></p>
+              <p><a class="btn btn-lg btn-primary" href="{% url 'gallery' %}" role="button">Browse gallery</a></p>
             </div>
           </div>
         </div>

@@ -23,7 +23,6 @@
                <tr>
 				   <th>Games Played</th>
                  <th>Most Kills</th>
-                 <th>Average Kills</th>
                  <th>Most Days Survived</th>
                  <th>Average Days Survived</th>
                 </tr>
@@ -32,9 +31,8 @@
                 <tr>
                   <td>{{player.games_played}}</td>
                   <td>{{player.most_kills}} kills</td>
-				  <td>kills</td>
                   <td>{{player.most_days_survived}} days</td>
-                  <td>days</td>
+                  <td>{{average_days}} days {{player.total_days}}</td>
                 </tr>
 			 </tbody>
 			</table>

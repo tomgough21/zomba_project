@@ -48,6 +48,7 @@ def profile(request, username):
         context_dict['profile_user'] = user
         player = Player.objects.get(user = user)
         context_dict['player'] = player
+        context_dict['average_days'] = player.total_days / player.games_played
     except:
         pass
     return render(request, 'zomba/profile.html',context_dict)

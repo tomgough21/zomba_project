@@ -8,7 +8,7 @@ class Badge(models.Model):
     name = models.CharField(max_length=128,unique=True)
     description = models.TextField()
     criteria = models.IntegerField(default = 0)
-    bage_type = models.CharField(max_length=128,unique=True)
+    badge_type = models.CharField(max_length=128,unique=True)
     level = models.CharField(max_length=128,unique=True)
     icon = models.ImageField(upload_to='profile_images', blank=True)
     def __unicode__(self):
@@ -30,7 +30,7 @@ class Player(models.Model):
     most_days_survived = models.IntegerField(default = 0)
     most_kills = models.IntegerField(default = 0)
     most_people = models.IntegerField(default = 0)
-    total_days = models.IntegerField(default = 0)
+    total_days = models.FloatField(default = 0)
     total_kills = models.IntegerField(default = 0)
     #game object
     current_game = models.OneToOneField(InGame, null=True, blank=True)
