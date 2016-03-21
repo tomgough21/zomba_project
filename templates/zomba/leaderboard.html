@@ -61,17 +61,40 @@
 
             <div id="kills" style="display:block; border:none; padding-left:25px; padding-top:0px; padding-bottom: 25px;">
             <h1 class="page-header">Most Kills</h2>
-            {% for value in mostKills %}
-            <b>{{value.user.username}}</b> has killed <b>{{value.most_kills}}</b> zombies.<br>
-            {% endfor%}
+            <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+               <tr>
+           <th>User</th>
+           <th>Kills</th>
+                </tr>
+            </thead>
+            <tbody>
+                  {% for value in mostKills %}
+                  <tr><td><b>{{value.user.username}}</b></td><td>{{value.most_kills}}</td></tr>
+                  {% endfor %}
+            </tbody>
+                </table>
+              </div>
             </div>
 
             <div id="survive" style="display:none; border:none; padding-left:25px; padding-top:0px; padding-bottom: 25px;">
             <h1 class="page-header">Longest Time Survived</h2>
-            {% for value in mostDays %}
-            <b>{{value.user.username}}</b> has survived <b>{{value.most_days_survived}}</b> days.<br>
-
-            {% endfor%}
+            <div class="table-responsive">
+            <table class="table table-striped">
+            <thead>
+               <tr>
+           <th>User</th>
+           <th>Kills</th>
+                </tr>
+            </thead>
+            <tbody>
+                  {% for value in mostDays %}
+                  <tr><td><b>{{value.user.username}}</b></td><td>{{value.most_days_survived}}</td></tr>
+                  {% endfor %}
+            </tbody>
+                </table>
+              </div>
             </div>
             <br><br><br><br>
         </div>
