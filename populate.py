@@ -25,6 +25,21 @@ def add_user(username, email, password,mostKills,mostDays,mostPartyMembers, tota
     profile = Player.objects.get_or_create(user = user,most_kills=mostKills,most_days_survived=mostDays,most_people=mostPartyMembers,total_days=totalDays,total_kills=totalKills)
     return user
 
+def add_badge(name,description,bage_type,criteria,level,icon):
+    b = Badge.objects.get_or_create(name=name)[0]
+    b.description=description
+    b.bage_type=bage_type
+    b.criteria=criteria
+    b.level=level
+    b.icon=icon
+    b.save()
+    return b
+
+def add_achievement(badge,player):
+    a = Achievement.objects.get_or_create(badge=badge,player=player)[0]
+    a.save()
+    return a
+
 def setup_admin_account():
     user = User.objects.create_superuser(username='admin', password='password', email='admin@zomba.co.uk')
     user.save()

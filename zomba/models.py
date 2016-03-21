@@ -10,7 +10,7 @@ class Badge(models.Model):
     criteria = models.IntegerField(default = 0)
     bage_type = models.CharField(max_length=128,unique=True)
     level = models.CharField(max_length=128,unique=True)
-    icon = models.ImageField(upload_to='profile_images', blank=True)
+    icon = models.ImageField(upload_to='badge_icon', blank=True)
     def __unicode__(self):
         return self.name
 
