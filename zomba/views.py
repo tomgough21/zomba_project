@@ -33,14 +33,6 @@ def achievements(request):
 def gallery(request):
     return render(request, 'zomba/gallery.html')
 
-
-@login_required
-def create_player(request):
-    Player.objects.create(user = request.user)
-    user = request.user
-    username = user.username
-    return HttpResponseRedirect('/zomba/profile/'+ username)
-
 def profile(request, username):
     context_dict={}
     try:

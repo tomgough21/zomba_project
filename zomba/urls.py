@@ -13,6 +13,5 @@ urlpatterns = patterns('',
   url(r'^editor/',views.engine_editor, name='editor'),
   url(r'^game/',views.game, name='game'),
   url(r'^engine_update/', views.engine_update, name='engine_update'),
-  url(r'^update_player/', views.create_player, name='create_player'),
   url(r'^profile/(?P<username>[\w\-]+)/$', views.profile, name='profile'),
 )
