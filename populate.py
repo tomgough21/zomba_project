@@ -13,9 +13,9 @@ def populate():
     #add a standard user
     add_user('p3p','p3p@p3psoft.co.uk','password',0,1,2,3,4)
     add_user('test','test@test.com','12345',0,0,0,0,0)
-    add_user('jill','jill@test.com','jill',0,0,0,0,0)
-    add_user('bob','bob@test.com','bob',0,0,0,0,0)
-    add_user('jen','jen@test.com','jen',0,0,0,0,0)
+    jill = add_user('jill','jill@test.com','jill',0,0,0,0,0)
+    bob = add_user('bob','bob@test.com','bob',0,0,0,0,0)
+    jen = add_user('jen','jen@test.com','jen',0,0,0,0,0)
     add_user('tom','tom@test.com','tom',0,0,0,0,0)
     add_user('alex','alex@test.com','alex',0,0,0,0,0)
     add_user('kiro','kiro@test.com','kiro',0,0,0,0,0)
@@ -47,15 +47,19 @@ def populate():
     gold_kills = add_badge('Kills Gold','kill 50 zombies','kills',50,3,'images/badges/gold_kills0000.jpg')
     silver_kills = add_badge('Kills Silver','kill 20 zombies','kills',20,2,'images/badges/silver_kills0000.jpg')
     bronze_kills = add_badge('Kills Bronze','kill 10 zombies','kills',10,1,'images/badges/bronze_kills0000.jpg')
-    #add your test users here
+
+    add_achievement(silver_days, jill);
+    
+
+
 
 def add_user(username, email, password,mostKills,mostDays,mostPartyMembers, totalDays, totalKills):
     user = User.objects.get_or_create(username=username, email=email)[0]
     user.set_password(password)
     user.save()
     #create the Player profile
-    profile = Player.objects.get_or_create(user = user,most_kills=mostKills,most_days_survived=mostDays,most_people=mostPartyMembers,total_days=totalDays,total_kills=totalKills)
-    return user
+    player = Player.objects.get_or_create(user = user,most_kills=mostKills,most_days_survived=mostDays,most_people=mostPartyMembers,total_days=totalDays,total_kills=totalKills)[0]
+    return player
 
 def add_badge(name,description,badge_type,criteria,level,icon):
     b = Badge.objects.get_or_create(name=name)[0]
