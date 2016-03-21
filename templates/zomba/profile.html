@@ -38,30 +38,78 @@
 			</table>
 		</div>	
 		<h1 class="page-header">{{ profile_user.username }}'s Achievements</h1>
-						
-          <div class="row placeholders">
-            <div class="col-xs-6 col-sm-3 placeholder">
-              <img src="{% static 'images/achievements/mostkills.png'%}" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
-              <h4>Most Kills</h4>
-              <span class="text-muted">Highest number of kills in a singular game session</span>
-            </div>
-            <div class="col-xs-6 col-sm-3 placeholder">
-              <img src="{% static 'images/achievements/survived.png'%}" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
-              <h4>Days Survived</h4>
-              <span class="text-muted">Longest time survived</span>
-            </div>
-            <div class="col-xs-6 col-sm-3 placeholder">
-              <img src="{% static 'images/achievements/mostfood.png'%}" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
-              <h4>Most Food</h4>
-              <span class="text-muted">Most amount of food at end of a singular game session</span>
-            </div>
-            <div class="col-xs-6 col-sm-3 placeholder">
-              <img src="{% static 'images/achievements/partymembers.png'%}" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
-              <h4>Most Party Members</h4>
-              <span class="text-muted">Most amount of party members at end of a singular game session</span>
-            </div>
-          </div>
-            <br><br><br>
+          {% if player.most_days_survived >= 20 %}
+          <img src="{% static 'images/badges/gold_days0000.jpg' %}" 
+          width="160" height="160" class="img-responsive" alt="Generic placeholder thumbnail">
+
+          {% elif player.most_days_survived >= 10 %}
+          <img src="{% static 'images/badges/silver_days0000.jpg' %}"
+          width="160" height="160" class="img-responsive" alt="Generic placeholder thumbnail">
+
+          {% elif player.most_days_survived >= 5 %}
+          <img src="{% static 'images/badges/bronze_days0000.jpg' %}"
+          width="160" height="160" class="img-responsive" alt="Generic placeholder thumbnail">
+
+          {% else %}
+          <img src="{% static 'images/rango.png' %}"
+          width="160" height="160" class="img-responsive" alt="Generic placeholder thumbnail">
+          {% endif %}
+
+
+          
+          {% if player.most_kills >= 50 %}
+          <img src="{% static 'images/badges/gold_kills0000.jpg' %}" 
+          width="160" height="160" class="img-responsive" alt="Generic placeholder thumbnail">
+
+          {% elif player.most_kills >= 20 %}
+          <img src="{% static 'images/badges/silver_kills0000.jpg' %}"
+          width="160" height="160" class="img-responsive" alt="Generic placeholder thumbnail">
+
+          {% elif player.most_kills >= 10 %}
+          <img src="{% static 'images/badges/bronze_kills0000.jpg' %}"
+          width="160" height="160" class="img-responsive" alt="Generic placeholder thumbnail">
+
+          {% else %}
+          <img src="{% static 'images/rango.png' %}"
+          width="160" height="160" class="img-responsive" alt="Generic placeholder thumbnail">
+          {% endif %}
+
+
+
+          {% if player.games_played >= 20 %}
+          <img src="{% static 'images/badges/gold_games0000.jpg' %}" 
+          width="160" height="160" class="img-responsive" alt="Generic placeholder thumbnail">
+
+          {% elif player.most_days_survived >= 10 %}
+          <img src="{% static 'images/badges/silver_games0000.jpg' %}"
+          width="160" height="160" class="img-responsive" alt="Generic placeholder thumbnail">
+
+          {% elif player.most_days_survived >= 5 %}
+          <img src="{% static 'images/badges/bronze_games0000.jpg' %}"
+          width="160" height="160" class="img-responsive" alt="Generic placeholder thumbnail">
+
+          {% else %}
+          <img src="{% static 'images/rango.png' %}"
+          width="160" height="160" class="img-responsive" alt="Generic placeholder thumbnail">
+          {% endif %}
+
+
+          {% if player.most_people >= 40 %}
+          <img src="{% static 'images/badges/gold_party0000.jpg' %}" 
+          width="160" height="160" class="img-responsive" alt="Generic placeholder thumbnail">
+
+          {% elif player.most_people >= 20 %}
+          <img src="{% static 'images/badges/silver_party0000.jpg' %}"
+          width="160" height="160" class="img-responsive" alt="Generic placeholder thumbnail">
+
+          {% elif player.most_people >= 10 %}
+          <img src="{% static 'images/badges/bronze_party0000.jpg' %}"
+          width="160" height="160" class="img-responsive" alt="Generic placeholder thumbnail">
+
+          {% else %}
+          <img src="{% static 'images/rango.png' %}"
+          width="160" height="160" class="img-responsive" alt="Generic placeholder thumbnail">
+          {% endif %}
 
             
 {% else %}
