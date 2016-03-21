@@ -1,9 +1,14 @@
 from django.db import models
 from django.template.defaultfilters import slugify
 from django.contrib.auth.models import User
+from registration.signals import *
 from zomba_engine.game import *
 
-#todo: need to add badges to Population script
+def addPlayer(sender, user, request, **kwargs):
+    Player.objects.get_or_create(user=user)
+
+user_registered.connect(addPlayer)
+
 class Badge(models.Model):
     name = models.CharField(max_length=128,unique=True)
     description = models.TextField()
