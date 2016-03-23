@@ -108,11 +108,6 @@ def helper_update_stats(player, game):
     if player.most_days_survived < game.player_state.days:
         player.most_days_survived = game.player_state.days
 
-    if game.is_game_over(): #you dont get the stat boost unless you die
-        player.games_played += 1
-        player.total_days += game.player_state.days
-        player.total_kills += game.player_state.kills
-
 def helper_new_acheivments(player, game):
     return []
 
@@ -137,6 +132,14 @@ def helper_save_game(user, game):
     player.save()
 
 def helper_new_game(user):
+    game = helper_get_game(user);
+    if game != None:
+        player = get_object_or_404(Player, user = user);
+        if game.is_game_over(): #you dont get the stat boost unless you die
+            player.games_played += 1
+            player.total_days += game.player_state.days
+            player.total_kills += game.player_state.kills
+    
     g = Engine.Game()
     g.start_new_day()
     helper_save_game(user, g)
@@ -160,9 +163,9 @@ def helper_get_game(user):
 def helper_get_gamestate(g):
     house = g.street.get_current_house()
     room  = house.room_list[house.current_room];
+
     state = { "game_state" : g.game_state,
               "time_left": g.time_left,
-
               "player": { "party": g.player_state.party,
                           "ammo" : g.player_state.ammo,
                           "food" : g.player_state.food ,
@@ -172,11 +175,15 @@ def helper_get_gamestate(g):
                           "num_of_houses": g.street.num_of_houses,
                           "current_house": g.street.current_house },
               "house":  { "num_of_rooms" : house.num_of_rooms,
-                          "current_room" : house.current_room   },
+                          "current_room" : house.current_room},
               "room":   { "zombies": room.zombies, 
                           "people" : room.people,
                           "food"   : room.food,
                           "ammo"   : room.ammo },
+              "update": { "food"   : g.update_state.food,
+                          "ammo"   : g.update_state.ammo,
+                          "kills"   : g.update_state.kills,
+                          "party"   : g.update_state.party},
             }
     if g.is_day_over():
         state["game_state"] = "DAY_OVER"

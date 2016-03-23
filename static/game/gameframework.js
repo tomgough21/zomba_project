@@ -13,11 +13,11 @@ var GameFramework = (function () {
     }
 
     State.prototype.update = function(delta) {
-        if(this.scene.resources_loading === 0 && this.scene.onLoad !== undefined) {
-          this.scene.onLoad();
-          this.scene.onLoad = undefined;
-        }
         if(this.scene) {
+            if(this.scene.resources_loading === 0 && this.scene.onLoad !== undefined) {
+              this.scene.onLoad.bind(this)();
+              this.scene.onLoad = undefined;
+            }
             this.scene.update(delta);
         }
     }

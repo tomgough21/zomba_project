@@ -32,24 +32,31 @@ var SpriteEngine = (function () {
         return cookieValue;
     }
 
-  Scene.prototype.sendCommand = function(command, func) {
+  Scene.prototype.sendCommand = function(ob, command, func) {
     var that = this;
-    jQuery.ajax({
+    that.command_func = func;
+    that.ob = ob;
+    var command_dict = {
       url: '/engine_update/',
       type: 'post',
       data: JSON.stringify(command),
       headers: {
           "X-CSRFToken": this.getCookie('csrftoken'),
       },
-      dataType: 'json',
-      success: function (data) {
-          that.resources_loading --;
-          console.log(data);
-          if(func !== undefined){
-            func(data);
-          }
-      }
-    });
+      dataType: 'json'
+    }
+
+
+    command_dict.success = function (data) {
+      (function(meh){
+        meh.resources_loading --;
+        if(meh.command_func !== undefined){
+          meh.command_func.bind(meh.ob)(data);
+        }
+      }(that));
+    }
+
+    jQuery.ajax(command_dict);
     this.resources_loading ++;
   }
 
@@ -524,7 +531,7 @@ var SpriteEngine = (function () {
     for(var k = 0; k < this.data.layers; k++) {
       var style = "";
       if(k >= this.data.layers -2) {
-        style = "z-index:3000;";
+        style = "z-index:10;";
       }
       var layer = $('<div/>', {
         class: 'game_terrain_layer',
@@ -541,9 +548,7 @@ var SpriteEngine = (function () {
           var tileset_name = GameResources.tilesets[this.data.tiles[k][(j*this.data.width)+i][0]].name;
           var frame_id = this.data.tiles[k][(j*this.data.width)+i][1];
           var tile = new SpriteEngine.GameObject(this.scene, tileset_name, column).setGroup(this.group).setFrame(frame_id).setScale(2.0);
-
         }
-
       }
     }
     this.visible = true;
