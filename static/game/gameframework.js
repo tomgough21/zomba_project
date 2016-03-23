@@ -47,10 +47,18 @@ var GameFramework = (function () {
         that.keyDown(e);
       });
       dom.click(function(e) {
-        e.relative = {x : 0, y: 0};
-        e.relative.x = e.pageX - $(that.scene.container)[0].offsetLeft;
-        e.relative.y = e.pageY - $(that.scene.container)[0].offsetTop;
-        that.click(e);
+        
+        var container = $(that.scene.container)[0];
+        var bottom = container.offsetTop + container.offsetHeight
+        var right = container.offsetLeft + container.offsetWidth
+
+        if( e.pageX > container.offsetLeft && e.pageX < right && //only forward event if inside containing element
+            e.pageY > container.offsetTop && e.pageY < bottom) {
+            e.relative = {x : 0, y: 0};
+            e.relative.x = e.pageX - container.offsetLeft;
+            e.relative.y = e.pageY - container.offsetTop;
+            that.click(e);
+        }
       });
     }
 
