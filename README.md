@@ -15,8 +15,11 @@ tomgough21: Tom 2136487G
 
 --------------------
 #Installation
+
 Clone repository: git clone https://github.com/tomgough21/zomba_project.git
+
 Install Required Packages: pip install -r "requirements.txt"
+
 Setup Database: python clean_db.py
 
 

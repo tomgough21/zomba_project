@@ -1,7 +1,6 @@
 {% extends "zomba/base.html" %}
 {% load staticfiles %}
 {% block body_block %}
-{% if user.is_authenticated %}
 {% load avatar_tags %}
 
 <div class="container-fluid">
@@ -35,7 +34,8 @@
                   </tr>
               </tbody>
       </table>
-      </div>  
+      </div> 
+
         <h1 class="page-header">{{ profile_user.username }}'s Achievements</h1>
           <div class="row placeholders"> 
             <div class="col-xs-6 col-sm-3 placeholder"> 
@@ -110,8 +110,4 @@
   </div>
 </div>
 
-            
-{% else %}
-	<strong>Sorry, but you must be a registered user to view this page.<br><br><br><strong/>
-{% endif %}
 {% endblock %}

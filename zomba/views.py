@@ -41,8 +41,16 @@ def profile(request, username):
         player = Player.objects.get(user = user)
         context_dict['player'] = player
         context_dict['average_days'] = player.total_days / player.games_played
+        achievements = {}
+        achievements['kills'] = Achievement.objects.filter(player = player, badge__badge_type__contains="kills").order_by('-badge__level')[:1];
+        achievements['games'] = Achievement.objects.filter(player = player, badge__badge_type__contains="games").order_by('-badge__level')[:1];
+        achievements['party'] = Achievement.objects.filter(player = player, badge__badge_type__contains="party").order_by('-badge__level')[:1];
+        achievements['days'] = Achievement.objects.filter(player = player, badge__badge_type__contains="days").order_by('-badge__level')[:1];
+        context_dict["achievements"] = achievements;
+
     except:
         pass
+    print context_dict
     return render(request, 'zomba/profile.html',context_dict)
 
 #these methods should be in a ZombaInterface class, time is against me
