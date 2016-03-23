@@ -81,7 +81,7 @@
   }
 
   function updateStats(that, state){
-    $('#game_score').text("Ammo: "+ state.player.ammo + " Food: " + state.player.food );
+    $('#game_score').text("Ammo: "+ state.player.ammo + " Food: " + state.player.food + " Kills " + state.player.kills);
 
     var time = ((((100 - state.time_left) / 100) * 12) + 6)
     var hour = ''+Math.floor(time);
@@ -655,8 +655,10 @@
         var zombie = new SpriteEngine.GameObject(that.scene, 'zombie', '#room_frame').setGroup('active_room_zombies').setPosition(getRandomInt(95,880),getRandomInt(136,480)).setScale(2.0).setState(getRandomInt(0,16));
         that.zombies.push(zombie);
       }
-      console.log(that.scene.remote_state.room.people);
-      for(var i = 0; i < that.scene.remote_state.room.people; i++) {
+
+      var party_member = that.scene.remote_state.room.people != 0? that.scene.remote_state.room.people : that.scene.remote_state.update.party
+
+      for(var i = 0; i < party_member; i++) {
         new SpriteEngine.GameObject(that.scene, 'player', '#room_frame').setGroup('active_room_zombies').setPosition(getRandomInt(95,880),getRandomInt(136,480)).setScale(2.0).setState(getRandomInt(0,16));
       }
 

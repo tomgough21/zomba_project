@@ -45,55 +45,6 @@ def profile(request, username):
         pass
     return render(request, 'zomba/profile.html',context_dict)
 
-def user_login(request):
-
-    # If the request is a HTTP POST, try to pull out the relevant information.
-    if request.method == 'POST':
-        # Gather the username and password provided by the user.
-        # This information is obtained from the login form.
-                # We use request.POST.get('<variable>') as opposed to request.POST['<variable>'],
-                # because the request.POST.get('<variable>') returns None, if the value does not exist,
-                # while the request.POST['<variable>'] will raise key error exception
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-
-        # Use Django's machinery to attempt to see if the username/password
-        # combination is valid - a User object is returned if it is.
-        user = authenticate(username=username, password=password)
-
-        # If we have a User object, the details are correct.
-        # If None (Python's way of representing the absence of a value), no user
-        # with matching credentials was found.
-        if user:
-            # Is the account active? It could have been disabled.
-            if user.is_active:
-                # If the account is valid and active, we can log the user in.
-                # We'll send the user back to the homepage.
-                login(request, user)
-                return HttpResponseRedirect('/zomba/')
-            else:
-                # An inactive account was used - no logging in!
-                return HttpResponse("Your Zomba account is disabled.")
-        else:
-            # Bad login details were provided. So we can't log the user in.
-            print "Invalid login details: {0}, {1}".format(username, password)
-            return HttpResponse("Invalid login details supplied.")
-
-    # The request is not a HTTP POST, so display the login form.
-    # This scenario would most likely be a HTTP GET.
-    else:
-        # No context variables to pass to the template system, hence the
-        # blank dictionary object...
-        return render(request, 'registration/login.html', {})
-
-@login_required
-def restricted(request):
-	return HttpResponse("Since you're logged in, you can see this text")
-
-def user_logout(request):
-	logout(request)
-	return HttpResponseRedirect('/zomba/')
-
 #these methods should be in a ZombaInterface class, time is against me
 def helper_update_stats(player, game):
     if(not player or not game):
@@ -117,6 +68,7 @@ def helper_get_achievement(player):
 
 def helper_new_achievement(player, game):
     badges = helper_get_achievement(player)
+
     if player.most_days_survived >= 20 and "Survivor Gold" not in badges:
         Achievement.objects.get_or_create(badge=Badge.objects.filter(name = "Survivor Gold")[0],player=player)
     elif player.most_days_survived >= 10 and "Survivor Silver" not in badges:
@@ -167,15 +119,7 @@ def helper_save_game(user, game):
     helper_new_achievement(player, game)
     player.save()
 
-def helper_new_game(user):
-    game = helper_get_game(user);
-    if game != None:
-        player = get_object_or_404(Player, user = user);
-        if game.is_game_over(): #you dont get the stat boost unless you finish
-            player.games_played += 1
-            player.total_days += game.player_state.days
-            player.total_kills += game.player_state.kills
-    
+def helper_new_game(user):  
     g = Engine.Game()
     g.start_new_day()
     helper_save_game(user, g)
@@ -196,7 +140,7 @@ def helper_get_game(user):
     g._time_left = game_state["time_left"]
     return g
 
-def helper_get_gamestate(g):
+def helper_get_gamestate(user, g):
     house = g.street.get_current_house()
     room  = house.room_list[house.current_room];
 
@@ -225,6 +169,12 @@ def helper_get_gamestate(g):
         state["game_state"] = "DAY_OVER"
     if g.is_game_over():
         state["game_state"] = "GAME_OVER"
+        player = get_object_or_404(Player, user = user);
+ #you dont get the stat boost unless you finish
+        player.games_played += 1
+        player.total_days += g.player_state.days
+        player.total_kills += g.player_state.kills
+        player.save();
 
     return state
 
@@ -237,31 +187,31 @@ def engine_update(request):
 
         if update_event["instruction"] == "new_game":   #restart game
             g = helper_new_game(request.user)
-            return JsonResponse({"command": "new_game", "status": "ok", "state": helper_get_gamestate(g) })
+            return JsonResponse({"command": "new_game", "status": "ok", "state": helper_get_gamestate(request.user, g) })
 
         if update_event["instruction"] == "load_game":      #either load or newgame and tell client which
             g = helper_get_game(request.user)
             if g == None:
                 g = helper_new_game(request.user)
-                return JsonResponse({"command": "new_game", "status": "ok", "state": helper_get_gamestate(g)})
-            return JsonResponse({"command": "load_game", "status": "ok", "state": helper_get_gamestate(g)})
+                return JsonResponse({"command": "new_game", "status": "ok", "state": helper_get_gamestate(request.user, g)})
+            return JsonResponse({"command": "load_game", "status": "ok", "state": helper_get_gamestate(request.user, g)})
 
         if update_event["instruction"] == "take_turn":  #take a turn
             g = helper_get_game(request.user)
             if(update_event["turn"] in g.turn_options()):
                 if update_event["turn"] == "MOVE" and int(update_event["data1"]) == g.street.current_house: #move to current house, noop
-                    return JsonResponse({"command": "take_turn", "status": "ok", "state": helper_get_gamestate(g)})
+                    return JsonResponse({"command": "take_turn", "status": "ok", "state": helper_get_gamestate(request.user, g)})
                 g.take_turn(update_event["turn"], int(update_event["data1"]))
                 helper_save_game(request.user, g)
-                return JsonResponse({"command": "take_turn", "status": "ok", "state": helper_get_gamestate(g)})
-            return JsonResponse({"command": "take_turn", "status": "invalid turn", "state": helper_get_gamestate(g)})
+                return JsonResponse({"command": "take_turn", "status": "ok", "state": helper_get_gamestate(request.user, g)})
+            return JsonResponse({"command": "take_turn", "status": "invalid turn", "state": helper_get_gamestate(request.user, g)})
 
         if update_event["instruction"] == "end_day":  #end the day
             g = helper_get_game(request.user)
             g.end_day()
             g.start_new_day()
             helper_save_game(request.user, g)
-            return JsonResponse({"command": "end_day", "status": "ok", "state": helper_get_gamestate(g)})
+            return JsonResponse({"command": "end_day", "status": "ok", "state": helper_get_gamestate(request.user, g)})
 
     return JsonResponse({"command": update_event, "status": "failed"})
 
