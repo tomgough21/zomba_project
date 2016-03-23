@@ -48,12 +48,11 @@ var SpriteEngine = (function () {
 
 
     command_dict.success = function (data) {
-      (function(meh){
-        meh.resources_loading --;
-        if(meh.command_func !== undefined){
-          meh.command_func.bind(meh.ob)(data);
-        }
-      }(that));
+      console.log(data);
+      that.resources_loading --;
+      if(that.command_func !== undefined){
+        that.command_func.bind(that.ob)(data);
+      }
     }
 
     jQuery.ajax(command_dict);

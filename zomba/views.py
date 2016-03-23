@@ -94,7 +94,7 @@ def user_logout(request):
 	logout(request)
 	return HttpResponseRedirect('/zomba/')
 
-#hacked together for testing
+#these methods should be in a ZombaInterface class, time is against me
 def helper_update_stats(player, game):
     if(not player or not game):
         return
@@ -108,8 +108,43 @@ def helper_update_stats(player, game):
     if player.most_days_survived < game.player_state.days:
         player.most_days_survived = game.player_state.days
 
-def helper_new_acheivments(player, game):
-    return []
+def helper_get_achievement(player):
+    achievements = Achievement.objects.filter(player = player)
+    acc_dict = {}
+    for achievement in achievements:
+        acc_dict[achievement.badge.name] = achievement.badge
+    return acc_dict
+
+def helper_new_achievement(player, game):
+    badges = helper_get_achievement(player)
+    if player.most_days_survived >= 20 and "Survivor Gold" not in badges:
+        Achievement.objects.get_or_create(badge=Badge.objects.filter(name = "Survivor Gold")[0],player=player)
+    elif player.most_days_survived >= 10 and "Survivor Silver" not in badges:
+        Achievement.objects.get_or_create(badge=Badge.objects.filter(name = "Survivor Silver")[0],player=player)
+    elif player.most_days_survived >= 5 and "Survivor Bronze" not in badges:
+        Achievement.objects.get_or_create(badge=Badge.objects.filter(name = "Survivor Bronze")[0],player=player)
+
+    if player.most_kills >= 50 and "Kills Gold" not in badges:
+        Achievement.objects.get_or_create(badge=Badge.objects.filter(name = "Kills Gold")[0],player=player)
+    elif player.most_kills >= 20 and "Kills Silver" not in badges:
+        Achievement.objects.get_or_create(badge=Badge.objects.filter(name = "Kills Silver")[0],player=player)
+    elif player.most_kills >= 10 and "Kills Bronze" not in badges:
+        Achievement.objects.get_or_create(badge=Badge.objects.filter(name = "Kills Bronze")[0],player=player)
+
+    if player.games_played >= 20 and "Stamina Gold" not in badges:
+        Achievement.objects.get_or_create(badge=Badge.objects.filter(name = "Stamina Gold")[0],player=player)
+    elif player.games_played >= 10 and "Stamina Silver" not in badges:
+        Achievement.objects.get_or_create(badge=Badge.objects.filter(name = "Stamina Silver")[0],player=player)
+    elif player.games_played >= 5 and "Stamina Bronze" not in badges:
+        Achievement.objects.get_or_create(badge=Badge.objects.filter(name = "Stamina Bronze")[0],player=player)
+
+    if player.most_people >= 40 and "Party Gold" not in badges:
+        Achievement.objects.get_or_create(badge=Badge.objects.filter(name = "Party Gold")[0],player=player)
+    elif player.most_people >= 20 and "Party Silver" not in badges:
+        Achievement.objects.get_or_create(badge=Badge.objects.filter(name = "Party Silver")[0],player=player)
+    elif player.most_people >= 10 and "Party Bronze" not in badges:
+        Achievement.objects.get_or_create(badge=Badge.objects.filter(name = "Party Bronze")[0],player=player)
+    return
 
 def helper_save_game(user, game):
     player = get_object_or_404(Player, user = user);
@@ -129,13 +164,14 @@ def helper_save_game(user, game):
 
     player.current_game.save()
     helper_update_stats(player, game)
+    helper_new_achievement(player, game)
     player.save()
 
 def helper_new_game(user):
     game = helper_get_game(user);
     if game != None:
         player = get_object_or_404(Player, user = user);
-        if game.is_game_over(): #you dont get the stat boost unless you die
+        if game.is_game_over(): #you dont get the stat boost unless you finish
             player.games_played += 1
             player.total_days += game.player_state.days
             player.total_kills += game.player_state.kills

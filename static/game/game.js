@@ -655,7 +655,7 @@
         var zombie = new SpriteEngine.GameObject(that.scene, 'zombie', '#room_frame').setGroup('active_room_zombies').setPosition(getRandomInt(95,880),getRandomInt(136,480)).setScale(2.0).setState(getRandomInt(0,16));
         that.zombies.push(zombie);
       }
-
+      console.log(that.scene.remote_state.room.people);
       for(var i = 0; i < that.scene.remote_state.room.people; i++) {
         new SpriteEngine.GameObject(that.scene, 'player', '#room_frame').setGroup('active_room_zombies').setPosition(getRandomInt(95,880),getRandomInt(136,480)).setScale(2.0).setState(getRandomInt(0,16));
       }
