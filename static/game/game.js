@@ -127,6 +127,12 @@
       $('#game_gui_resource_change').show(1000);
     }
 
+    $('#game_gui_achievements').empty();
+    for(var i = 0; i < state.new_achievements.length; i++) {
+      console.log("achi!")
+      $('#game_gui_achievements').append($('<div />', {class: "achievement_display"}).css('background-image',  'url('+state.new_achievements[i].icon+')'));
+    }
+
     if(state.game_state == "DAY_OVER" || state.game_state == "GAME_OVER") {
       while(that.framework.states.length > 2) { //remove all states back to required level
         that.framework.popState();
@@ -155,6 +161,10 @@
 
     $('<div/>', {
       id : 'game_bottom_gui'
+    }).appendTo('#game_gui');
+
+    $('<div/>', {
+      id : 'game_gui_achievements'
     }).appendTo('#game_gui');
 
     $('<div/>', { id : 'game_active_buttons'}).appendTo("#game_bottom_gui")
@@ -222,7 +232,6 @@
   extend(GameState, GameFramework.State);
 
   GameState.prototype.onLoad = function() {
-    console.log("loaded game")
     for(var i = 0; i < this.world.length; i++) {
       var level = this.world[i];
       this.terrain.push(new SpriteEngine.Terrain(this.scene, "#game_terrain", GameResources.levels[level], this.world_width, 0 ));
@@ -450,7 +459,6 @@
       this.world_width += (GameResources.levels[level].width * 64); //64 is the tilewidth
       this.terrain[i].draw();
     }
-    console.log("hi")
     this.player = new SpriteEngine.GameObject(this.scene, 'player', '#house_frame').setGroup('active_house').setPosition(450,500).setScale(2.0);
     this.updateTerrain();
   }

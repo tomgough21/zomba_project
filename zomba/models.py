@@ -17,7 +17,7 @@ class Badge(models.Model):
     criteria = models.IntegerField(default = 0)
     badge_type = models.CharField(max_length=128,)
     level = models.CharField(max_length=128)
-    icon = models.ImageField(upload_to='badge_icon', blank=True)
+    icon = models.ImageField(upload_to='images/badges', blank=True)
     def __unicode__(self):
         return self.name
 
@@ -110,7 +110,7 @@ class Player(models.Model):
 
     def get_new_achievements(self):
         now = timezone.now()
-        earlier = now - timezone.timedelta(hours=30)
+        earlier = now - timezone.timedelta(seconds=30)
         achievements = []
         for ach in Achievement.objects.filter(player = self, date_awarded__range=(earlier,now)):
             achievements.append({"name":ach.badge.name, "icon":ach.badge.icon.url, "desc":ach.badge.description});

@@ -48,6 +48,21 @@ body {
   padding-left: 10px;
 }
 
+#game_gui_achievements {
+  position: absolute;
+  width: 180px;
+  left: 80%;
+  top: 200px;
+  color: rgb(255,255,255);
+}
+
+.achievement_display {
+  margin-top: 5px;
+  width: 150px;
+  height: 150px;
+  background-size: 150px 150px;
+}
+
 #game_bottom_gui {
   position: absolute;
   top: 70px;

@@ -42,7 +42,7 @@
         {% for achievement in achievements %}
         {% if achievement != None %}
         <div class="col-xs-6 col-sm-3 placeholder"> 
-          <img src="{% static achievement.badge.icon %}" 
+          <img src="/media/{{achievement.badge.icon }}" 
           width="160" height="160" class="img-responsive" alt="Generic placeholder thumbnail">
           <div> {{achievement.date_awarded}}</div>
         </div>

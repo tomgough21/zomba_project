@@ -18,8 +18,9 @@ var GameFramework = (function () {
             if(this.scene.resources_loading === 0 && this.loaded == false) {
               this.onLoad();
               this.loaded = true;
+            } else if(this.loaded == true) {
+                this.scene.update(delta);
             }
-            this.scene.update(delta);
         }
     }
 
