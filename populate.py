@@ -32,21 +32,21 @@ def populate():
     palpatine = add_user('palpatine','palpatine@test.com','palpatine',0,0,0,0,0,0)
 
 
-    gold_days = add_badge('Survivor Gold','survive for 15 days','days',15,3,'images/badges/gold_days0000.jpg')
-    silver_days = add_badge('Survivor Silver','survive for 10 days','days',10,2,'images/badges/silver_days0000.jpg')
-    bronze_days = add_badge('Survivor Bronze','survive for 5 days','days',5,1,'images/badges/bronze_days0000.jpg')
+    gold_days = add_badge('Survivor Gold','survive for 15 days','most_days_survived',15,3,'images/badges/gold_days0000.jpg')
+    silver_days = add_badge('Survivor Silver','survive for 10 days','most_days_survived',10,2,'images/badges/silver_days0000.jpg')
+    bronze_days = add_badge('Survivor Bronze','survive for 5 days','most_days_survived',5,1,'images/badges/bronze_days0000.jpg')
 	
-    gold_party = add_badge('Party Gold','40 party members','party',40,3,'images/badges/gold_party0000.jpg')
-    silver_party = add_badge('Party Silver','20 party members','party',20,2,'images/badges/silver_party0000.jpg')
-    bronze_party = add_badge('Party Bronze','10 party members','party',10,1,'images/badges/bronze_party0000.jpg')
+    gold_party = add_badge('Party Gold','40 party members','most_people',40,3,'images/badges/gold_party0000.jpg')
+    silver_party = add_badge('Party Silver','20 party members','most_people',20,2,'images/badges/silver_party0000.jpg')
+    bronze_party = add_badge('Party Bronze','10 party members','most_people',10,1,'images/badges/bronze_party0000.jpg')
 	
-    gold_games = add_badge('Stamina Gold','play 20 games','games',20,3,'images/badges/gold_games0000.jpg')
-    silver_games = add_badge('Stamina Silver','play 10 games','games',10,2,'images/badges/silver_games0000.jpg')
-    bronze_games = add_badge('Stamina Bronze','play 5 games','games',5,1,'images/badges/bronze_games0000.jpg')
+    gold_games = add_badge('Stamina Gold','play 20 games','games_played',20,3,'images/badges/gold_games0000.jpg')
+    silver_games = add_badge('Stamina Silver','play 10 games','games_played',10,2,'images/badges/silver_games0000.jpg')
+    bronze_games = add_badge('Stamina Bronze','play 5 games','games_played',5,1,'images/badges/bronze_games0000.jpg')
 	
-    gold_kills = add_badge('Kills Gold','kill 50 zombies','kills',50,3,'images/badges/gold_kills0000.jpg')
-    silver_kills = add_badge('Kills Silver','kill 20 zombies','kills',20,2,'images/badges/silver_kills0000.jpg')
-    bronze_kills = add_badge('Kills Bronze','kill 10 zombies','kills',10,1,'images/badges/bronze_kills0000.jpg')
+    gold_kills = add_badge('Kills Gold','kill 50 zombies','most_kills',50,3,'images/badges/gold_kills0000.jpg')
+    silver_kills = add_badge('Kills Silver','kill 20 zombies','most_kills',20,2,'images/badges/silver_kills0000.jpg')
+    bronze_kills = add_badge('Kills Bronze','kill 10 zombies','most_kills',10,1,'images/badges/bronze_kills0000.jpg')
 
     
     add_achievement(bronze_kills, jill)

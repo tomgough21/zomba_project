@@ -8,9 +8,11 @@
     <div class="col-md-3">
       {% avatar profile_user %}
       <h1><b>{{ profile_user.username }}</b></h1>
+      {%if user %}
       {%if user == profile_user %}
       <li><a href="{% url 'auth_password_change' %}">Change password</a></li>
       <li><a href="{% url 'avatar_change' %}">Change your avatar</a></li></span>
+      {% endif %}
       {% endif %}
     </div>
     <div class="col-md-9">
@@ -30,82 +32,23 @@
                     <td>{{player.games_played}}</td>
                     <td>{{player.most_kills}} kills</td>
                     <td>{{player.most_days_survived}} days</td>
-                    <td>{{average_days}} days</td>
+                    <td>{{player.average_days}} days</td>
                   </tr>
               </tbody>
       </table>
       </div> 
-
-        <h1 class="page-header">{{ profile_user.username }}'s Achievements</h1>
-          <div class="row placeholders"> 
-            <div class="col-xs-6 col-sm-3 placeholder"> 
-              {% if player.most_days_survived >= 20 %}
-              <img src="{% static 'images/badges/gold_days0000.jpg' %}" 
-              width="160" height="160" class="img-responsive" alt="Generic placeholder thumbnail">
-
-              {% elif player.most_days_survived >= 10 %}
-              <img src="{% static 'images/badges/silver_days0000.jpg' %}"
-              width="160" height="160" class="img-responsive" alt="Generic placeholder thumbnail">
-
-              {% elif player.most_days_survived >= 5 %}
-              <img src="{% static 'images/badges/bronze_days0000.jpg' %}"
-              width="160" height="160" class="img-responsive" alt="Generic placeholder thumbnail">
-
-              {% else %}
-              {% endif %}
-            </div>
-
-            <div class="col-xs-6 col-sm-3 placeholder"> 
-              {% if player.most_kills >= 50 %}
-              <img src="{% static 'images/badges/gold_kills0000.jpg' %}" 
-              width="160" height="160" class="img-responsive" alt="Generic placeholder thumbnail">
-
-              {% elif player.most_kills >= 20 %}
-              <img src="{% static 'images/badges/silver_kills0000.jpg' %}"
-              width="160" height="160" class="img-responsive" alt="Generic placeholder thumbnail">
-
-              {% elif player.most_kills >= 10 %}
-              <img src="{% static 'images/badges/bronze_kills0000.jpg' %}"
-              width="160" height="160" class="img-responsive" alt="Generic placeholder thumbnail">
-
-              {% else %}
-              {% endif %}
-            </div>
-
-            <div class="col-xs-6 col-sm-3 placeholder"> 
-              {% if player.games_played >= 20 %}
-              <img src="{% static 'images/badges/gold_games0000.jpg' %}" 
-              width="160" height="160" class="img-responsive" alt="Generic placeholder thumbnail">
-
-              {% elif player.games_played >= 10 %}
-              <img src="{% static 'images/badges/silver_games0000.jpg' %}"
-              width="160" height="160" class="img-responsive" alt="Generic placeholder thumbnail">
-
-              {% elif player.games_played >= 5 %}
-              <img src="{% static 'images/badges/bronze_games0000.jpg' %}"
-              width="160" height="160" class="img-responsive" alt="Generic placeholder thumbnail">
-
-              {% else %}
-              {% endif %}
-            </div>
-
-            <div class="col-xs-6 col-sm-3 placeholder"> 
-              {% if player.most_people >= 40 %}
-              <img src="{% static 'images/badges/gold_party0000.jpg' %}" 
-              width="160" height="160" class="img-responsive" alt="Generic placeholder thumbnail">
-
-              {% elif player.most_people >= 20 %}
-              <img src="{% static 'images/badges/silver_party0000.jpg' %}"
-              width="160" height="160" class="img-responsive" alt="Generic placeholder thumbnail">
-
-              {% elif player.most_people >= 10 %}
-              <img src="{% static 'images/badges/bronze_party0000.jpg' %}"
-              width="160" height="160" class="img-responsive" alt="Generic placeholder thumbnail">
-
-              {% else %}
-              {% endif %}
-            </div>
-          </div>
+      <h1 class="page-header">{{ profile_user.username }}'s Achievements</h1>
+      <div class="row placeholders"> 
+        {% for achievement in achievements %}
+        {% if achievement != None %}
+        <div class="col-xs-6 col-sm-3 placeholder"> 
+          <img src="{% static achievement.badge.icon %}" 
+          width="160" height="160" class="img-responsive" alt="Generic placeholder thumbnail">
+          <div> {{achievement.date_awarded}}</div>
+        </div>
+        {% endif %}
+        {% endfor %}
+      </div>
     </div>
   </div>
 </div>
