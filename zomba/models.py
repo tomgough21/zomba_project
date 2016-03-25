@@ -134,7 +134,7 @@ class Player(models.Model):
             self.current_game = InGame.objects.create()
         self.current_game.save()
         self._calculate_stats()
-        self._caluculate_achievements() #autocreate the earned achievements
+        self._calculate_achievements() #autocreate the earned achievements
         super(Player, self).save(*args, **kwargs)
 
     def _calculate_stats(self):
@@ -146,7 +146,7 @@ class Player(models.Model):
         if self.most_days_survived < game.player_state.days:
             self.most_days_survived = game.player_state.days
 
-    def _caluculate_achievements(self):
+    def _calculate_achievements(self):
         badges = Badge.objects.all()
         for badge in badges:
             #badge type is the tracked variable name to easily add new badges (code independance)
