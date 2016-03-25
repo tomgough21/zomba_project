@@ -45,8 +45,6 @@ var SpriteEngine = (function () {
       },
       dataType: 'json'
     }
-
-
     command_dict.success = function (data) {
       console.log(data);
       that.resources_loading --;

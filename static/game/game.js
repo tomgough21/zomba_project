@@ -35,6 +35,7 @@
 
     var gui = $("#game_frame");
     var that = this;
+
     gui.append($('<div/>', {class: 'game_popup', id:'game_start_screen'})
       .text("Zomba")
       .append($('<div/>', {class: 'scorebox', style: 'font-size: 0.4em;'}))
@@ -46,33 +47,35 @@
         }
     )));
 
-    this.scene.onLoad = function() {
-      if(that.newgame == true) {
-        $("#game_start_button").text("New Game");
-      } else {
-        $("#game_start_button").text("Continue");
-        $("#game_start_screen").append($('<div/>', {class: 'game_popup_button', id: 'game_start_button'}).text("Restart")
-          .click(function() {
-            that.scene.sendCommand(that, { instruction: 'new_game'}, function( response ) {
-              if(that.scene.resources_loading === 0) {
-                that.scene.remote_state = response.state;
-                that.framework.pushState(new GameState(that.scene));
-              }
-            })
-          }));
-      }
-    }
-    this.scene.sendCommand(this, { instruction: 'load_game'}, function( response ) {
-      that.scene.remote_state = response.state;
-      if(response.command === "new_game"){
-        that.newgame = true;
-      }
-    } );
-
   }
   extend(MenuState, GameFramework.State);
 
+  MenuState.prototype.onLoad = function() {
+    if(this.newgame == true) {
+      this.framework.pushState(new GameState(this.scene));
+    } else {
+      var that = this
+      $("#game_start_button").text("Continue");
+      $("#game_start_screen").append($('<div/>', {class: 'game_popup_button', id: 'game_start_button'}).text("Restart")
+        .click(function() {
+          that.scene.sendCommand(that, { instruction: 'new_game'}, function( response ) {
+            if(this.scene.resources_loading === 0) {
+              this.scene.remote_state = response.state;
+              this.framework.pushState(new GameState(this.scene));
+            }
+          })
+        }));
+    }
+  }
+
   MenuState.prototype.focus = function() {
+    var that = this
+    this.scene.sendCommand(this, { instruction: 'load_game'}, function( response ) {
+      that.scene.remote_state = response.state;
+      if(that.scene.remote_state.time_left == 100 && that.scene.remote_state.player.days == 1){
+        that.newgame = true;
+      }
+    } );
     $("#game_start_screen").show();
   }
 
@@ -186,7 +189,6 @@
       class: 'game_terrain'
     }).appendTo('#street_frame');
 
-
     var that = this;
     $('#wait_button').click( function(e) {
       e.stopPropagation();
@@ -216,20 +218,21 @@
     this.active_terrain = undefined;
     this.terrain = []
     
-    this.scene.onLoad = function() {
-      for(var i = 0; i < that.world.length; i++) {
-        var level = that.world[i];
-        that.terrain.push(new SpriteEngine.Terrain(that.scene, "#game_terrain", GameResources.levels[level], that.world_width, 0 ));
-        that.world_width += (GameResources.levels[level].width * 64); //64 is the tilewidth
-      }
-      that.player = new SpriteEngine.GameObject(that.scene, 'player', '#street_frame').setGroup('street').setPosition(450,500).setScale(2.0);
-      that.player.spritestate.pause();
-      that.updateTerrain();
-      updateStats(that, that.scene.remote_state)
-    }
-    
   }
   extend(GameState, GameFramework.State);
+
+  GameState.prototype.onLoad = function() {
+    console.log("loaded game")
+    for(var i = 0; i < this.world.length; i++) {
+      var level = this.world[i];
+      this.terrain.push(new SpriteEngine.Terrain(this.scene, "#game_terrain", GameResources.levels[level], this.world_width, 0 ));
+      this.world_width += (GameResources.levels[level].width * 64); //64 is the tilewidth
+    }
+    this.player = new SpriteEngine.GameObject(this.scene, 'player', '#street_frame').setGroup('street').setPosition(450,500).setScale(2.0);
+    this.player.spritestate.pause();
+    this.updateTerrain();
+    updateStats(this, this.scene.remote_state)
+  }
 
   GameState.prototype.playerInRect = function(x1, x2, y1, y2) {
     var x = this.x;
@@ -437,23 +440,20 @@
     this.world_width = 0;
     this.active_terrain = undefined;
     this.terrain = []
-
-    var that = this;
-    
-    this.scene.onLoad = function() {
-      for(var i = 0; i < that.world.length; i++) {
-        var level = that.world[i];
-        that.terrain.push(new SpriteEngine.Terrain(that.scene, "#house_terrain", GameResources.levels[level], that.world_width, 0 ));
-        that.world_width += (GameResources.levels[level].width * 64); //64 is the tilewidth
-        that.terrain[i].draw();
-      }
-      console.log("hi")
-      that.player = new SpriteEngine.GameObject(that.scene, 'player', '#house_frame').setGroup('active_house').setPosition(450,500).setScale(2.0);
-
-      that.updateTerrain();
-    }
   }
   extend(HouseState, GameFramework.State);
+
+  HouseState.prototype.onLoad = function() {
+    for(var i = 0; i < this.world.length; i++) {
+      var level = this.world[i];
+      this.terrain.push(new SpriteEngine.Terrain(this.scene, "#house_terrain", GameResources.levels[level], this.world_width, 0 ));
+      this.world_width += (GameResources.levels[level].width * 64); //64 is the tilewidth
+      this.terrain[i].draw();
+    }
+    console.log("hi")
+    this.player = new SpriteEngine.GameObject(this.scene, 'player', '#house_frame').setGroup('active_house').setPosition(450,500).setScale(2.0);
+    this.updateTerrain();
+  }
 
   HouseState.prototype.playerInRect = function(x1, x2, y1, y2) {
     var x = this.x;
@@ -608,7 +608,7 @@
 
   HouseState.prototype.focus = function(dom) {
     GameFramework.State.prototype.focus.call(this, dom);
-     $('#house_frame').show()
+    $('#house_frame').show()
   }
 
   HouseState.prototype.click = function(e) {
@@ -641,35 +641,6 @@
     this.zombies = []
 
     var that = this;
-
-    this.scene.onLoad = function() {
-      for(var i = 0; i < that.world.length; i++) {
-        var level = that.world[i];
-        that.terrain.push(new SpriteEngine.Terrain(that.scene, "#room_terrain", GameResources.levels[level], that.world_width, 0 ));
-        that.world_width += (GameResources.levels[level].width * 64); //64 is the tilewidth
-        that.terrain[i].draw();
-      }
-      that.player = new SpriteEngine.GameObject(that.scene, 'player', '#room_frame').setGroup('active_room').setPosition(450,500).setScale(2.0);
-
-      for(var i = 0; i < that.scene.remote_state.room.zombies; i++) {
-        var zombie = new SpriteEngine.GameObject(that.scene, 'zombie', '#room_frame').setGroup('active_room_zombies').setPosition(getRandomInt(95,880),getRandomInt(136,480)).setScale(2.0).setState(getRandomInt(0,16));
-        that.zombies.push(zombie);
-      }
-
-      var party_member = that.scene.remote_state.room.people != 0? that.scene.remote_state.room.people : that.scene.remote_state.update.party
-
-      for(var i = 0; i < party_member; i++) {
-        new SpriteEngine.GameObject(that.scene, 'player', '#room_frame').setGroup('active_room_zombies').setPosition(getRandomInt(95,880),getRandomInt(136,480)).setScale(2.0).setState(getRandomInt(0,16));
-      }
-
-      if(that.scene.remote_state.game_state == "ZOMBIE") {
-        that.scene.playSound('zombie');
-        $("#attack_button").css("visibility", "visible");
-      }
-
-      that.updateTerrain();
-    }
-
     $('#attack_button').click( function(e) {
       e.stopPropagation();
       if(that.scene.resources_loading == 0) {
@@ -677,9 +648,11 @@
           var that = this.framework.states[this.framework.states.length - 1]; //todo: this is weird, fix it
           this.scene.remote_state = response.state;
           $("#attack_button").css("visibility", "hidden");
-          for(var i = 0; i < that.zombies.length; i++) {
-            that.zombies[i].setSprite('blood');
+          var dead_zombies = that.zombies.splice(0, that.scene.remote_state.update.kills);
+          for(var i in dead_zombies) {
+            dead_zombies[i].setSprite('blood');
           }
+
           updateStats(that, response.state);
         });
       }
@@ -687,6 +660,34 @@
     });
   }
   extend(RoomState, GameFramework.State);
+
+  RoomState.prototype.onLoad = function() {
+    for(var i = 0; i < this.world.length; i++) {
+      var level = this.world[i];
+      this.terrain.push(new SpriteEngine.Terrain(this.scene, "#room_terrain", GameResources.levels[level], this.world_width, 0 ));
+      this.world_width += (GameResources.levels[level].width * 64); //64 is the tilewidth
+      this.terrain[i].draw();
+    }
+    this.player = new SpriteEngine.GameObject(this.scene, 'player', '#room_frame').setGroup('active_room').setPosition(450,500).setScale(2.0);
+
+    for(var i = 0; i < this.scene.remote_state.room.zombies; i++) {
+      var zombie = new SpriteEngine.GameObject(this.scene, 'zombie', '#room_frame').setGroup('active_room_zombies').setPosition(getRandomInt(95,880),getRandomInt(136,480)).setScale(2.0).setState(getRandomInt(0,16));
+      this.zombies.push(zombie);
+    }
+
+    var party_member = this.scene.remote_state.room.people != 0? this.scene.remote_state.room.people : this.scene.remote_state.update.party
+
+    for(var i = 0; i < party_member; i++) {
+      new SpriteEngine.GameObject(this.scene, 'player', '#room_frame').setGroup('active_room_zombies').setPosition(getRandomInt(95,880),getRandomInt(136,480)).setScale(2.0).setState(getRandomInt(0,16));
+    }
+
+    if(this.scene.remote_state.game_state == "ZOMBIE") {
+      this.scene.playSound('zombie');
+      $("#attack_button").css("visibility", "visible");
+    }
+
+    this.updateTerrain();
+  }
 
   RoomState.prototype.playerInRect = function(x1, x2, y1, y2) {
     var x = this.player.position.x;
@@ -861,12 +862,16 @@
     gui.append($('<div/>', {class: 'game_popup', id:'game_over_screen', style: 'font-size: 2em;'})
       .text("You Died, its sad, but everyone else is dead, so oh well")
       .append($('<div/>', {class: 'scorebox', style: 'font-size: 0.4em;'}))
-      .append($('<div/>', {class: 'game_popup_button', id: 'game_over_button'}).text("Continue")
-        .click(function(e) {
-          that.framework.popState();
-        })
-      )
-    );
+      .append($('<div/>', {class: 'game_popup_button', id: 'game_over_button'}).text("Restart")
+      .click(function() {
+            that.scene.sendCommand(that, { instruction: 'new_game'}, function( response ) {
+              if(that.scene.resources_loading === 0) {
+                that.scene.remote_state = response.state;
+                that.framework.popState()
+                that.framework.pushState(new GameState(that.scene));
+              }
+            })
+          })));
   }
   extend(GameOverState, GameFramework.State);
   

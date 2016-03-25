@@ -104,7 +104,7 @@ class House(object):
         if p <p_zombie:
             zombie = random.randint(0,5)
 
-        return zombie
+        return zombie + 1
 
     def gen_ammo(self,player_state):
         ammo = 0

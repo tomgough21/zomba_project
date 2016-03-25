@@ -2,6 +2,7 @@
 var GameFramework = (function () {
     function State(scene) {
         this.scene = scene;
+        this.loaded = false;
     }
 
     State.prototype.destroy = function() {
@@ -14,12 +15,16 @@ var GameFramework = (function () {
 
     State.prototype.update = function(delta) {
         if(this.scene) {
-            if(this.scene.resources_loading === 0 && this.scene.onLoad !== undefined) {
-              this.scene.onLoad.bind(this)();
-              this.scene.onLoad = undefined;
+            if(this.scene.resources_loading === 0 && this.loaded == false) {
+              this.onLoad();
+              this.loaded = true;
             }
             this.scene.update(delta);
         }
+    }
+
+    State.prototype.onLoad = function() {
+
     }
 
     State.prototype.draw = function() {

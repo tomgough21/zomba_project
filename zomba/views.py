@@ -59,8 +59,8 @@ def engine_update(request):
             player.save()
             return JsonResponse({"command": "new_game", "status": "ok", "state": player.get_gamestate_dict() })
 
-        if update_event["instruction"] == "load_game":      #either load or newgame and tell client which
-            return JsonResponse({"command": "new_game", "status": "ok", "state": player.get_gamestate_dict()})
+        if update_event["instruction"] == "load_game":      #Model takes care of all this, just send the state
+            return JsonResponse({"command": "load_game", "status": "ok", "state": player.get_gamestate_dict()})
 
         if update_event["instruction"] == "take_turn":  #take a turn
             g = player.current_game.game_object
@@ -78,8 +78,7 @@ def engine_update(request):
             g.start_new_day()
             player.save()
             return JsonResponse({"command": "end_day", "status": "ok", "state": player.get_gamestate_dict()})
-
-    return JsonResponse({"command": update_event, "status": "failed"})
+        return JsonResponse({"command": update_event, "status": "failed"})
 
 @login_required
 def engine_editor(request):
