@@ -67,7 +67,7 @@
     this.x = 20;
     this.y = 64;
 
-    this.level = GameResources.levels[0];
+    this.level = GameResources.levels.houses[0];
     this.active_tile = undefined;
     this.active_tileset_id = undefined;
     this.active_layer = undefined;
@@ -143,37 +143,37 @@
         }
         that.layers[that.active_layer].css('pointer-events', 'auto')
       });
-    });
-
-    
-    this.scene.onLoad = function() {
-      for(var k = 0; k < GameResources.tilesets.length; k++) {
-        var layer = jQuery('<div/>', {
-        }).appendTo('#tiles_frame');
-        for(var i = 0; i < GameResources.tilesets[k].width; i++) {
-          var column = jQuery('<div/>', {
-            class: 'game_terrain_column'
-          }).appendTo(layer);
-          for(var j = 0; j < GameResources.tilesets[k].height; j++) {
-            var tile = new SpriteEngine.GameObject(that.scene, GameResources.tilesets[k].name, column).setGroup('tilesets').setFrame((j*GameResources.tilesets[k].width)+i).setScale(2.0);
-            tile.dom_obj.addClass('mark_grid');
-            (function (i_index, j_index, tileset_id) {
-              tile.dom_obj.click( function() {
-                that.active_tile = (j_index* GameResources.tilesets[tileset_id].width)+i_index;
-                that.active_tileset = GameResources.tilesets[tileset_id].name
-                that.active_tileset_id = tileset_id;
-                $("#game_active_word").text("<" + that.active_tileset + "> tile: " + that.active_tile)
-              });
-            })(i, j, k);
-          }
-
-        }
-      }
-      that.updateLayers(0);
-    }
-    
+    });    
   }
   extend(GameState, GameFramework.State);
+
+  GameState.prototype.onLoad = function() {
+    var that = this
+    for(var k = 0; k < GameResources.tilesets.length; k++) {
+      var layer = jQuery('<div/>', {
+      }).appendTo('#tiles_frame');
+      for(var i = 0; i < GameResources.tilesets[k].width; i++) {
+        var column = jQuery('<div/>', {
+          class: 'game_terrain_column'
+        }).appendTo(layer);
+        for(var j = 0; j < GameResources.tilesets[k].height; j++) {
+          var tile = new SpriteEngine.GameObject(that.scene, GameResources.tilesets[k].name, column).setGroup('tilesets').setFrame((j*GameResources.tilesets[k].width)+i).setScale(2.0);
+          tile.dom_obj.addClass('mark_grid');
+          (function (i_index, j_index, tileset_id) {
+            tile.dom_obj.click( function() {
+              that.active_tile = (j_index* GameResources.tilesets[tileset_id].width)+i_index;
+              that.active_tileset = GameResources.tilesets[tileset_id].name
+              that.active_tileset_id = tileset_id;
+              $("#game_active_word").text("<" + that.active_tileset + "> tile: " + that.active_tile)
+            });
+          })(i, j, k);
+        }
+
+      }
+    }
+    that.updateLayers(0);
+  }
+
 
   GameState.prototype.updateLayers = function(set_active) {
     if(this.active_layer === undefined) {

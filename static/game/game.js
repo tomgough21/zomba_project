@@ -129,7 +129,6 @@
 
     $('#game_gui_achievements').empty();
     for(var i = 0; i < state.new_achievements.length; i++) {
-      console.log("achi!")
       $('#game_gui_achievements').append($('<div />', {class: "achievement_display"}).css('background-image',  'url('+state.new_achievements[i].icon+')'));
     }
 
@@ -214,15 +213,17 @@
 
     this.terrain = undefined;
     this.player = undefined;
-    this.x = -(this.scene.remote_state.street.current_house * (GameResources.levels[1].width * 64));
-    this.y = 0;
+
     this.moveDelta = 0;
     this.movemode = 0;
     this.world = []
 
     for( var i = 0; i < this.scene.remote_state.street.num_of_houses; i++) {
-      this.world.push(1)
+      this.world.push(getRandomInt(0, GameResources.levels.houses.length-1))
     }
+
+    this.x = -(this.scene.remote_state.street.current_house * (GameResources.levels.houses[this.world[0]].width * 64));
+    this.y = 0;
 
     this.world_width = 0;
     this.active_terrain = undefined;
@@ -234,8 +235,8 @@
   GameState.prototype.onLoad = function() {
     for(var i = 0; i < this.world.length; i++) {
       var level = this.world[i];
-      this.terrain.push(new SpriteEngine.Terrain(this.scene, "#game_terrain", GameResources.levels[level], this.world_width, 0 ));
-      this.world_width += (GameResources.levels[level].width * 64); //64 is the tilewidth
+      this.terrain.push(new SpriteEngine.Terrain(this.scene, "#game_terrain", GameResources.levels.houses[level], this.world_width, 0 ));
+      this.world_width += (GameResources.levels.houses[level].width * 64); //64 is the tilewidth
     }
     this.player = new SpriteEngine.GameObject(this.scene, 'player', '#street_frame').setGroup('street').setPosition(450,500).setScale(2.0);
     this.player.spritestate.pause();
@@ -255,7 +256,7 @@
   GameState.prototype.getVisibleTerrain = function(x,y) {
     var x_sum = 0;
     for(var i = 0; i < this.world.length; i++) {
-      x_sum += (GameResources.levels[this.world[i]].width * 64);
+      x_sum += (GameResources.levels.houses[this.world[i]].width * 64);
       if(-this.x < x_sum) {
         return i;
       }
@@ -429,22 +430,23 @@
 
     this.terrain = undefined;
     this.player = undefined;
-    this.x = -((this.scene.remote_state.house.current_room * (GameResources.levels[2].width * 64)) - 250); //250 is player offset
-    this.y = 0;
     this.moveDelta = 0;
     this.movemode = 0;
     rooms = rooms - 2;
     var middle = Math.round(rooms / 2);
     this.world  = [];
-    this.world.push(4);
+    this.world.push(2);
     for(var i = 0; i < rooms; i ++) {
       if(i!=(middle-1)) {
-        this.world.push(3);
+        this.world.push(1);
       } else {
-        this.world.push(2);
+        this.world.push(0);
       }
     }
-    this.world.push(5);
+    this.world.push(3);
+
+    this.x = -((this.scene.remote_state.house.current_room * (GameResources.levels.hallway[0].width * 64)) - 250); //250 is player offset
+    this.y = 0;
 
     this.world_width = 0;
     this.active_terrain = undefined;
@@ -455,8 +457,8 @@
   HouseState.prototype.onLoad = function() {
     for(var i = 0; i < this.world.length; i++) {
       var level = this.world[i];
-      this.terrain.push(new SpriteEngine.Terrain(this.scene, "#house_terrain", GameResources.levels[level], this.world_width, 0 ));
-      this.world_width += (GameResources.levels[level].width * 64); //64 is the tilewidth
+      this.terrain.push(new SpriteEngine.Terrain(this.scene, "#house_terrain", GameResources.levels.hallway[level], this.world_width, 0 ));
+      this.world_width += (GameResources.levels.hallway[level].width * 64); //64 is the tilewidth
       this.terrain[i].draw();
     }
     this.player = new SpriteEngine.GameObject(this.scene, 'player', '#house_frame').setGroup('active_house').setPosition(450,500).setScale(2.0);
@@ -476,7 +478,7 @@
     var x_sum = 0;
     for(var i = 0; i < this.world.length; i++) {
       var oldsum = x_sum;
-      x_sum += (GameResources.levels[this.world[i]].width * 64);
+      x_sum += (GameResources.levels.hallway[this.world[i]].width * 64);
       if(-x < x_sum && -x > oldsum) {
         return i;
       }
@@ -642,7 +644,7 @@
     this.moveDelta = 0;
     this.movemode = 0;
 
-    this.world = [0] // setup room array
+    this.world = [getRandomInt(0, GameResources.levels.rooms.length - 1)] // setup room array
     this.world_width = 0;
     this.active_terrain = undefined;
     this.terrain = []
@@ -672,8 +674,8 @@
   RoomState.prototype.onLoad = function() {
     for(var i = 0; i < this.world.length; i++) {
       var level = this.world[i];
-      this.terrain.push(new SpriteEngine.Terrain(this.scene, "#room_terrain", GameResources.levels[level], this.world_width, 0 ));
-      this.world_width += (GameResources.levels[level].width * 64); //64 is the tilewidth
+      this.terrain.push(new SpriteEngine.Terrain(this.scene, "#room_terrain", GameResources.levels.rooms[level], this.world_width, 0 ));
+      this.world_width += (GameResources.levels.rooms[level].width * 64); //64 is the tilewidth
       this.terrain[i].draw();
     }
     this.player = new SpriteEngine.GameObject(this.scene, 'player', '#room_frame').setGroup('active_room').setPosition(450,500).setScale(2.0);
@@ -710,7 +712,7 @@
     var x_sum = 0;
     for(var i = 0; i < this.world.length; i++) {
       var oldsum = x_sum;
-      x_sum += (GameResources.levels[this.world[i]].width * 64);
+      x_sum += (GameResources.levels.rooms[this.world[i]].width * 64);
       if(-x <= x_sum && -x > oldsum) {
         return i;
       }
@@ -868,7 +870,7 @@
     var gui = $("#game_frame");
     var that = this;
     gui.append($('<div/>', {class: 'game_popup', id:'game_over_screen', style: 'font-size: 2em;'})
-      .text("You Died, its sad, but everyone else is dead, so oh well")
+      .html("You Died, its sad, but everyone else is dead, so oh well<br />" + "You survived " + that.scene.remote_state.player.days + " Days and killed " + that.scene.remote_state.player.kills + " Zombies")
       .append($('<div/>', {class: 'scorebox', style: 'font-size: 0.4em;'}))
       .append($('<div/>', {class: 'game_popup_button', id: 'game_over_button'}).text("Restart")
       .click(function() {

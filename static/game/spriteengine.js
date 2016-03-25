@@ -46,7 +46,6 @@ var SpriteEngine = (function () {
       dataType: 'json'
     }
     command_dict.success = function (data) {
-      console.log(data);
       that.resources_loading --;
       if(that.command_func !== undefined){
         that.command_func.bind(that.ob)(data);
