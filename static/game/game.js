@@ -58,12 +58,12 @@
       $("#game_start_button").text("Continue");
       $("#game_start_screen").append($('<div/>', {class: 'game_popup_button', id: 'game_start_button'}).text("Restart")
         .click(function() {
-          that.scene.sendCommand(that, { instruction: 'new_game'}, function( response ) {
-            if(this.scene.resources_loading === 0) {
+          if(that.scene.resources_loading === 0) {
+            that.scene.sendCommand(that, { instruction: 'new_game'}, function( response ) {
               this.scene.remote_state = response.state;
               this.framework.pushState(new GameState(this.scene));
-            }
-          })
+            })
+          }
         }));
     }
   }
@@ -201,10 +201,12 @@
     var that = this;
     $('#wait_button').click( function(e) {
       e.stopPropagation();
-      that.scene.sendCommand(that, { instruction: 'take_turn', turn: 'WAIT', data1: that.active_terrain}, function( response ) {
-        that.scene.remote_state = response.state;
-        updateStats(that, response.state);
-      } );
+      if(that.scene.resources_loading === 0) {
+        that.scene.sendCommand(that, { instruction: 'take_turn', turn: 'WAIT', data1: that.active_terrain}, function( response ) {
+          that.scene.remote_state = response.state;
+          updateStats(that, response.state);
+        } );
+      }
     });
 
     $('<div/>', {
@@ -340,15 +342,17 @@
         var door_offsety = this.terrain[this.active_terrain].y;
 
         if(this.playerInRect(door.x1 - door_offsetx, door.x2 - door_offsetx, door.y1 + door_offsety, door.y2 + door_offsety)) {
+          if(this.scene.resources_loading === 0) {
           var that = this;
-          this.scene.sendCommand(this, { instruction: 'take_turn', turn: 'MOVE', data1: this.active_terrain}, function( response ) { //choice to enter seems redundant
-            that.scene.remote_state = response.state;
-            that.scene.sendCommand(that, { instruction: 'take_turn', turn: 'ENTER', data1: that.active_terrain}, function( response ) {
+            this.scene.sendCommand(this, { instruction: 'take_turn', turn: 'MOVE', data1: this.active_terrain}, function( response ) { //choice to enter seems redundant
               that.scene.remote_state = response.state;
-              that.framework.pushState(new HouseState(that.scene, that.scene.remote_state.house.num_of_rooms));
-              updateStats(that, response.state);
+              that.scene.sendCommand(that, { instruction: 'take_turn', turn: 'ENTER', data1: that.active_terrain}, function( response ) {
+                that.scene.remote_state = response.state;
+                that.framework.pushState(new HouseState(that.scene, that.scene.remote_state.house.num_of_rooms));
+                updateStats(that, response.state);
+              } );
             } );
-          } );
+          }
         }
         this.moveDelta = undefined;
 
@@ -536,12 +540,14 @@
           var door_offsety = this.terrain[this.active_terrain].y;
 
           if(this.playerInRect(door.x1 - door_offsetx, door.x2 - door_offsetx, door.y1 + door_offsety, door.y2 + door_offsety)) {
-            var that = this;
-            this.scene.sendCommand(this, { instruction: 'take_turn', turn: 'SEARCH', data1: this.active_terrain}, function( response ) { //choice to enter seems redundant
-              that.scene.remote_state = response.state;
-              that.framework.pushState(new RoomState(that.scene));
-              updateStats(that, response.state);
-            });
+            if(this.scene.resources_loading === 0) {
+              var that = this;
+              this.scene.sendCommand(this, { instruction: 'take_turn', turn: 'SEARCH', data1: this.active_terrain}, function( response ) { //choice to enter seems redundant
+                that.scene.remote_state = response.state;
+                that.framework.pushState(new RoomState(that.scene));
+                updateStats(that, response.state);
+              });
+            }
           }
         }
 
@@ -551,12 +557,14 @@
           var door_offsety = this.terrain[this.active_terrain].y;
 
           if(this.playerInRect(door.x1 - door_offsetx, door.x2 - door_offsetx, door.y1 + door_offsety, door.y2 + door_offsety)) {
-            var that = this;
-            this.scene.sendCommand(this, { instruction: 'take_turn', turn: 'EXIT', data1: this.active_terrain}, function( response ) { //choice to enter seems redundant
-              that.scene.remote_state = response.state;
-              that.framework.popState();
-              updateStats(that, response.state);
-            });
+            if(this.scene.resources_loading === 0) {
+              var that = this;
+              this.scene.sendCommand(this, { instruction: 'take_turn', turn: 'EXIT', data1: this.active_terrain}, function( response ) { //choice to enter seems redundant
+                that.scene.remote_state = response.state;
+                that.framework.popState();
+                updateStats(that, response.state);
+              });
+            }
           }
 
         }
@@ -773,13 +781,15 @@
 
             var that = this;
             if(this.scene.remote_state.game_state == "ZOMBIE") {
-              this.scene.sendCommand(this, { instruction: 'take_turn', turn: 'RUN', data1: this.active_terrain}, function( response ) { //choice to enter seems redundant
-                that.scene.remote_state = response.state;
-                $("#attack_button").css("visibility", "hidden");
-                that.framework.popState();  //pop Room state
-                that.framework.popState();  //pop house state
-                updateStats(that, response.state);
-              });
+              if(this.scene.resources_loading === 0) {
+                this.scene.sendCommand(this, { instruction: 'take_turn', turn: 'RUN', data1: this.active_terrain}, function( response ) { //choice to enter seems redundant
+                  that.scene.remote_state = response.state;
+                  $("#attack_button").css("visibility", "hidden");
+                  that.framework.popState();  //pop Room state
+                  that.framework.popState();  //pop house state
+                  updateStats(that, response.state);
+                });
+              }
             } else {
               that.framework.popState();  //return to corridor
             }
@@ -847,12 +857,14 @@
       .append($('<div/>', {class: 'scorebox', style: 'font-size: 0.4em;'}))
       .append($('<div/>', {class: 'game_popup_button', id: 'game_status_button'}).text("Continue")
         .click(function(e) {
-          that.scene.sendCommand(that, { instruction: 'end_day'}, function( response ) { 
-            that.scene.remote_state = response.state;
-            that.framework.popState();
-            that.framework.pushState(new GameState(that.scene));
-            updateStats(that, response.state);
-          });
+          if(that.scene.resources_loading === 0) {
+            that.scene.sendCommand(that, { instruction: 'end_day'}, function( response ) {
+                that.scene.remote_state = response.state;
+                that.framework.popState();
+                that.framework.pushState(new GameState(that.scene));
+                updateStats(that, response.state);
+            });
+          }
         })
       )
     );
@@ -874,14 +886,14 @@
       .append($('<div/>', {class: 'scorebox', style: 'font-size: 0.4em;'}))
       .append($('<div/>', {class: 'game_popup_button', id: 'game_over_button'}).text("Restart")
       .click(function() {
-            that.scene.sendCommand(that, { instruction: 'new_game'}, function( response ) {
-              if(that.scene.resources_loading === 0) {
-                that.scene.remote_state = response.state;
-                that.framework.popState()
-                that.framework.pushState(new GameState(that.scene));
-              }
-            })
-          })));
+        if(that.scene.resources_loading === 0) {
+          that.scene.sendCommand(that, { instruction: 'new_game'}, function( response ) {
+            that.scene.remote_state = response.state;
+            that.framework.popState()
+            that.framework.pushState(new GameState(that.scene));
+          })
+        }
+      })));
   }
   extend(GameOverState, GameFramework.State);
   
